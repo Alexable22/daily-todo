@@ -190,9 +190,15 @@ Page({
     if (!this.recordKey || !this.recordReady) return
     const id = e.currentTarget.dataset.id
     const checks = Object.assign({}, this.data.checks, { [id]: !this.data.checks[id] })
-    wx.vibrateShort({ type: 'light' }).catch(() => {})
     this.setData({ checks })
     this.applyView(this.data.items, checks)
+    // 模拟器/旧基础库上 vibrateShort 可能不存在或同步抛错，放最后且不影响勾选
+    if (wx.vibrateShort) {
+      try {
+        const p = wx.vibrateShort({ type: 'light' })
+        if (p && p.catch) p.catch(() => {})
+      } catch (err) {}
+    }
     const doneCount = this.data.items.filter(it => checks[it.id]).length
     const allDone = this.data.total > 0 && doneCount === this.data.total
     try {
