@@ -35,6 +35,44 @@
   font-size: 30rpx;
 }
 
+/* 戳一戳吉祥物 */
+.mascot-zone {
+  position: relative;
+  flex-shrink: 0;
+}
+.mascot-hover {
+  opacity: 0.8;
+}
+.poke-bubble {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 20;
+  margin-top: 14rpx;
+  max-width: 340rpx;
+  padding: 14rpx 22rpx;
+  background: #FF8FA3;
+  color: #FFFFFF;
+  font-size: 24rpx;
+  line-height: 1.5;
+  border-radius: 24rpx;
+  box-shadow: 0 8rpx 24rpx rgba(255, 143, 163, 0.35);
+  animation: bubbleIn 0.25s ease-out;
+}
+.poke-bubble::after {
+  content: '';
+  position: absolute;
+  right: 56rpx;
+  top: -10rpx;
+  border-left: 10rpx solid transparent;
+  border-right: 10rpx solid transparent;
+  border-bottom: 12rpx solid #FF8FA3;
+}
+@keyframes bubbleIn {
+  0% { opacity: 0; transform: translateY(-8rpx); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
 /* 进度卡 */
 .progress-card {
   margin-top: 20rpx;

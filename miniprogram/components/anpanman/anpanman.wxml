@@ -1,4 +1,4 @@
-<view class="anpan mood-{{mood}} {{animate ? 'bounce' : ''}}" style="width:{{size}}rpx;height:{{size}}rpx;">
+<view class="anpan mood-{{mood}} {{animate ? 'bounce' : ''}} {{poking ? 'poked' : ''}}" style="width:{{size}}rpx;height:{{size}}rpx;">
   <view class="face">
     <view class="eye eye-l"></view>
     <view class="eye eye-r"></view>

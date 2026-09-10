@@ -121,3 +121,16 @@
   55% { transform: translateY(0); }
   75% { transform: translateY(-10rpx); }
 }
+
+/* 戳一戳：挤压回弹，单次播放 */
+.poked {
+  animation: poke 0.5s ease-out;
+}
+
+@keyframes poke {
+  0% { transform: scale(1, 1); }
+  30% { transform: scale(1.14, 0.84); }
+  55% { transform: scale(0.93, 1.09); }
+  78% { transform: scale(1.04, 0.96); }
+  100% { transform: scale(1, 1); }
+}

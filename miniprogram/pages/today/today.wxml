@@ -5,7 +5,10 @@
       <view class="greeting">{{greeting}}</view>
       <view class="streak" wx:if="{{streak > 0}}">已连续打卡 <text class="streak-num">{{streak}}</text> 天</view>
     </view>
-    <anpanman size="{{150}}" mood="{{allDone ? 'cheer' : 'happy'}}" animate="{{allDone}}" />
+    <view class="mascot-zone" bindtap="pokeMascot" hover-class="mascot-hover">
+      <anpanman size="{{150}}" mood="{{allDone ? 'cheer' : 'happy'}}" animate="{{allDone}}" poke-seed="{{pokeSeed}}" />
+      <view wx:if="{{bubbleShow}}" class="poke-bubble">{{bubbleText}}</view>
+    </view>
   </view>
 
   <view wx:if="{{hasTemplate}}" class="card progress-card">

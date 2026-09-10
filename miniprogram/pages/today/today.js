@@ -10,6 +10,28 @@ const PRAISES = [
 
 const CONFETTI_COLORS = ['#FF8FA3', '#FFC9A9', '#FFD6DC', '#B5E0C8', '#A9C9FF', '#FFE08A']
 
+const POKE_QUOTES = [
+  '戳我做什么啦，嘿嘿',
+  '加油加油，我陪着妳呢',
+  '今天也是元气满满的一天',
+  '累了就休息一会儿，没关系',
+  '妳认真的样子，超可爱',
+  '完成了记得第一时间告诉我',
+  '慢慢来，一步一步就好',
+  '面包力量，传给妳！',
+  '偷偷说：妳比昨天更厉害了',
+  '学习辛苦啦，摸摸头'
+]
+
+// 模拟器/旧基础库上 vibrateShort 可能不存在或同步抛错，调用方照常走自己的逻辑
+function lightVibrate() {
+  if (!wx.vibrateShort) return
+  try {
+    const p = wx.vibrateShort({ type: 'light' })
+    if (p && p.catch) p.catch(() => {})
+  } catch (err) {}
+}
+
 // 给计划项附上勾选状态、进行状态和展示用时间文本；对同一输入幂等，可直接重复调用
 function decorate(items, checks, nowMin) {
   const timed = items.filter(i => i.startMin != null)
@@ -62,7 +84,10 @@ Page({
     ongoingText: '',
     celebrating: false,
     praise: '',
-    confetti: []
+    confetti: [],
+    pokeSeed: 0,
+    bubbleText: '',
+    bubbleShow: false
   },
 
   timer: null,
@@ -76,10 +101,18 @@ Page({
 
   onHide() {
     this.stopTimer()
+    if (this._bubbleTimer) {
+      clearTimeout(this._bubbleTimer)
+      this._bubbleTimer = null
+    }
   },
 
   onUnload() {
     this.stopTimer()
+    if (this._bubbleTimer) {
+      clearTimeout(this._bubbleTimer)
+      this._bubbleTimer = null
+    }
   },
 
   onPullDownRefresh() {
@@ -192,13 +225,7 @@ Page({
     const checks = Object.assign({}, this.data.checks, { [id]: !this.data.checks[id] })
     this.setData({ checks })
     this.applyView(this.data.items, checks)
-    // 模拟器/旧基础库上 vibrateShort 可能不存在或同步抛错，放最后且不影响勾选
-    if (wx.vibrateShort) {
-      try {
-        const p = wx.vibrateShort({ type: 'light' })
-        if (p && p.catch) p.catch(() => {})
-      } catch (err) {}
-    }
+    lightVibrate()
     const doneCount = this.data.items.filter(it => checks[it.id]).length
     const allDone = this.data.total > 0 && doneCount === this.data.total
     try {
@@ -242,6 +269,21 @@ Page({
 
   closeCelebrate() {
     this.setData({ celebrating: false })
+  },
+
+  pokeMascot() {
+    let idx = Math.floor(Math.random() * POKE_QUOTES.length)
+    // 连续两次抽到同一句很出戏，错开一条
+    if (POKE_QUOTES.length > 1 && idx === this._lastPokeIdx) idx = (idx + 1) % POKE_QUOTES.length
+    this._lastPokeIdx = idx
+    if (this._bubbleTimer) clearTimeout(this._bubbleTimer)
+    this.setData({
+      pokeSeed: this.data.pokeSeed + 1,
+      bubbleText: POKE_QUOTES[idx],
+      bubbleShow: true
+    })
+    this._bubbleTimer = setTimeout(() => this.setData({ bubbleShow: false }), 2200)
+    lightVibrate()
   },
 
   goImport() {
