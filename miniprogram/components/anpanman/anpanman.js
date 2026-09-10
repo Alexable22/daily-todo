@@ -4,6 +4,9 @@ Component({
     size: { type: Number, value: 160 },
     mood: { type: String, value: 'happy' },
     animate: { type: Boolean, value: false },
+    // 传入图片路径则显示真图（shape 控制圆形/圆角卡片），否则用纯 WXSS 手绘脸
+    src: { type: String, value: '' },
+    shape: { type: String, value: 'circle' },
     // 外部每戳一次就 +1，变化即触发一次挤压动画
     pokeSeed: { type: Number, value: 0 }
   },

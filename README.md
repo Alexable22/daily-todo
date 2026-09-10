@@ -20,7 +20,7 @@
 ## 隐私与版权说明
 
 - 纯本地存储，数据不离开手机，没有任何网络请求
-- 吉祥物为纯 WXSS 原创手绘（圆脸红鼻子的面包小人风格），未使用任何版权图片；想换真实图片可自行替换 `miniprogram/components/anpanman`
+- 吉祥物使用面包超人图片素材（`miniprogram/assets/mascot/`，由手机截图裁切，可用 `scripts/build-mascot-assets.py` 重新生成），**仅限个人自用**：不要上架小程序、不要把本仓库转为公开。组件 `miniprogram/components/anpanman` 不传 `src` 时仍渲染纯 WXSS 原创手绘脸，需要规避版权时去掉 `src` 属性即可
 - 本仓库早期版本基于微信云开发、支持朋友互看打卡（见 git 历史），需要时可以从历史中恢复
 
 ## 本地校验

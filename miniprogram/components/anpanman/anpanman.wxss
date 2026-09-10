@@ -122,6 +122,21 @@
   75% { transform: translateY(-10rpx); }
 }
 
+/* 真图模式：圆形贴纸（默认）或圆角卡片 */
+.mascot-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.img-circle {
+  border-radius: 50%;
+  box-shadow: 0 6rpx 18rpx rgba(242, 190, 126, 0.35);
+}
+.img-card {
+  border-radius: 28rpx;
+  box-shadow: 0 8rpx 22rpx rgba(140, 110, 120, 0.18);
+}
+
 /* 戳一戳：挤压回弹，单次播放 */
 .poked {
   animation: poke 0.5s ease-out;

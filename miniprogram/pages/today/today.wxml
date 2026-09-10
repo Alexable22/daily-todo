@@ -6,7 +6,7 @@
       <view class="streak" wx:if="{{streak > 0}}">已连续打卡 <text class="streak-num">{{streak}}</text> 天</view>
     </view>
     <view class="mascot-zone" bindtap="pokeMascot" hover-class="mascot-hover">
-      <anpanman size="{{150}}" mood="{{allDone ? 'cheer' : 'happy'}}" animate="{{allDone}}" poke-seed="{{pokeSeed}}" />
+      <anpanman size="{{150}}" src="{{allDone ? '/assets/mascot/cheer.jpg' : '/assets/mascot/happy.jpg'}}" animate="{{allDone}}" poke-seed="{{pokeSeed}}" />
       <view wx:if="{{bubbleShow}}" class="poke-bubble">{{bubbleText}}</view>
     </view>
   </view>
@@ -24,7 +24,7 @@
   </view>
 
   <view wx:if="{{!hasTemplate}}" class="card empty-card">
-    <anpanman size="{{180}}" mood="sleep" />
+    <anpanman size="{{300}}" src="/assets/mascot/rest.jpg" shape="card" />
     <view class="empty-title">今天还没有安排计划哦</view>
     <view class="empty-sub">可以把备忘录里的计划整段粘贴进来</view>
     <button class="btn-primary empty-btn" bindtap="goImport">导入我的计划</button>
@@ -50,7 +50,7 @@
     <view wx:for="{{confetti}}" wx:key="index" class="confetti"
           style="left:{{item.left}}%;background:{{item.color}};width:{{item.size}}rpx;height:{{item.size}}rpx;animation-delay:{{item.delay}}s"></view>
     <view class="celebrate-box">
-      <anpanman size="{{220}}" mood="cheer" animate="{{true}}" />
+      <anpanman size="{{220}}" src="/assets/mascot/cheer.jpg" animate="{{true}}" />
       <view class="praise">{{praise}}</view>
       <view class="praise-sub">今日计划全部完成，点任意处收下夸夸</view>
     </view>

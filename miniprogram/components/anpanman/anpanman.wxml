@@ -1,5 +1,6 @@
 <view class="anpan mood-{{mood}} {{animate ? 'bounce' : ''}} {{poking ? 'poked' : ''}}" style="width:{{size}}rpx;height:{{size}}rpx;">
-  <view class="face">
+  <image wx:if="{{src}}" class="mascot-img {{shape === 'card' ? 'img-card' : 'img-circle'}}" src="{{src}}" mode="aspectFill" />
+  <view wx:else class="face">
     <view class="eye eye-l"></view>
     <view class="eye eye-r"></view>
     <view wx:if="{{mood === 'cry'}}" class="tear tear-l"></view>
