@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "每周计划",
+  "usingComponents": {
+    "anpanman": "/components/anpanman/anpanman"
+  }
+}

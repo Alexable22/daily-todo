@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "一起加油",
+  "usingComponents": {
+    "anpanman": "/components/anpanman/anpanman"
+  }
+}

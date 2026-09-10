@@ -1,0 +1,123 @@
+/* 面包超人风格原创手绘吉祥物：圆脸 + 红鼻子 + 红脸蛋，纯 WXSS 绘制，无版权素材 */
+.anpan {
+  position: relative;
+}
+
+.face {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 40%, #FFE9C4 0%, #FCD9A0 60%, #F2BE7E 100%);
+  box-shadow: inset 0 -12rpx 0 rgba(222, 158, 82, 0.3), 0 6rpx 16rpx rgba(242, 190, 126, 0.4);
+}
+
+.eye {
+  position: absolute;
+  top: 24%;
+  width: 7%;
+  height: 13%;
+  background: #5B3A2E;
+  border-radius: 999rpx;
+}
+.eye-l { left: 33%; }
+.eye-r { right: 33%; }
+
+.cheek {
+  position: absolute;
+  top: 44%;
+  width: 19%;
+  height: 19%;
+  background: #FF9E9E;
+  border-radius: 50%;
+}
+.cheek-l { left: 12%; }
+.cheek-r { right: 12%; }
+
+.nose {
+  position: absolute;
+  left: 39%;
+  top: 40%;
+  width: 22%;
+  height: 22%;
+  background: #F25555;
+  border-radius: 50%;
+  box-shadow: 0 2rpx 6rpx rgba(242, 85, 85, 0.45);
+}
+
+.mouth {
+  position: absolute;
+  left: 33%;
+  top: 57%;
+  width: 34%;
+  height: 17%;
+  border-bottom: 6rpx solid #8C5A3C;
+  border-radius: 50%;
+}
+
+/* 欢呼：弯月笑眼 + 张开的嘴 */
+.mood-cheer .eye {
+  background: transparent;
+  border-top: 6rpx solid #5B3A2E;
+  border-radius: 50%;
+  height: 8%;
+  top: 28%;
+}
+.mood-cheer .mouth {
+  background: #8C5A3C;
+  border-bottom: none;
+  border-radius: 0 0 999rpx 999rpx;
+  height: 14%;
+  top: 63%;
+}
+
+/* 困倦：闭眼 + 小小的嘴 */
+.mood-sleep .eye {
+  height: 0;
+  border-top: 5rpx solid #5B3A2E;
+  border-radius: 0;
+  top: 31%;
+}
+.mood-sleep .mouth {
+  left: 44%;
+  width: 12%;
+  height: 6%;
+  top: 64%;
+  border-bottom-width: 5rpx;
+}
+
+/* 委屈：撇嘴 + 掉眼泪 */
+.mood-cry .mouth {
+  border-bottom: none;
+  border-top: 6rpx solid #8C5A3C;
+  top: 71%;
+  height: 12%;
+}
+.tear {
+  position: absolute;
+  top: 40%;
+  width: 9%;
+  height: 13%;
+  background: #8FD3FF;
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  animation: tearDrop 1.2s ease-in infinite;
+}
+.tear-l { left: 22%; }
+.tear-r { right: 22%; animation-delay: 0.5s; }
+
+@keyframes tearDrop {
+  0% { transform: translateY(0); opacity: 0; }
+  30% { opacity: 1; }
+  100% { transform: translateY(120%); opacity: 0; }
+}
+
+.bounce {
+  animation: bounce 0.9s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-22rpx) scale(1.04); }
+  55% { transform: translateY(0); }
+  75% { transform: translateY(-10rpx); }
+}

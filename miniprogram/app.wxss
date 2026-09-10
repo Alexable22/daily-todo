@@ -1,0 +1,60 @@
+/* 全局温柔少女风主题 */
+page {
+  background: #FFF6F1;
+  color: #6B4F4F;
+  font-size: 28rpx;
+  font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --pink: #FF8FA3;
+  --pink-light: #FFD6DC;
+  --peach: #FFC9A9;
+  --cream: #FFF6F1;
+  --text-main: #6B4F4F;
+  --text-sub: #B08E8E;
+}
+
+.card {
+  background: #FFFFFF;
+  border-radius: 28rpx;
+  box-shadow: 0 8rpx 24rpx rgba(255, 158, 163, 0.12);
+  padding: 28rpx;
+  box-sizing: border-box;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #FFB1B1, #FF8FA3);
+  color: #FFFFFF;
+  border-radius: 999rpx;
+  font-size: 30rpx;
+  line-height: 88rpx;
+  height: 88rpx;
+  text-align: center;
+  border: none;
+}
+
+.btn-primary::after {
+  border: none;
+}
+
+.btn-ghost {
+  background: #FFFFFF;
+  color: #FF8FA3;
+  border-radius: 999rpx;
+  font-size: 30rpx;
+  line-height: 84rpx;
+  height: 88rpx;
+  text-align: center;
+  border: 2rpx solid #FFD6DC;
+}
+
+.btn-ghost::after {
+  border: none;
+}
+
+.input-soft {
+  background: #FFF1EC;
+  border-radius: 20rpx;
+  padding: 20rpx 24rpx;
+  font-size: 28rpx;
+  color: #6B4F4F;
+  box-sizing: border-box;
+}

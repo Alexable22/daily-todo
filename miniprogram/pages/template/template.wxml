@@ -1,0 +1,54 @@
+<view class="page">
+  <view wx:if="{{cloudError}}" class="card error-card">
+    <view class="error-title">还没有连接上云服务</view>
+    <view class="error-text">请按 README 开通云开发、建好集合并部署 login 云函数，然后重新编译</view>
+  </view>
+
+  <block wx:else>
+    <scroll-view scroll-x class="wd-scroll" enhanced show-scrollbar="{{false}}">
+      <view class="wd-row">
+        <view wx:for="{{weekdays}}" wx:key="index" data-day="{{index + 1}}" bindtap="switchDay"
+              class="wd-chip {{current === index + 1 ? 'active' : ''}}">{{item}}</view>
+      </view>
+    </scroll-view>
+
+    <view class="card import-entry" bindtap="goImport">
+      <view class="import-body">
+        <view class="import-title">批量导入计划</view>
+        <view class="import-sub">把备忘录里的计划整段粘贴进来，自动识别时间和星期</view>
+      </view>
+      <view class="import-arrow">›</view>
+    </view>
+
+    <view wx:if="{{!loading && items.length === 0}}" class="card empty-card">
+      <anpanman size="{{150}}" mood="happy" />
+      <view class="empty-title">{{weekdays[current - 1]}}还没有计划</view>
+      <view class="empty-sub">在下方添加，或去批量导入</view>
+    </view>
+
+    <view wx:for="{{items}}" wx:key="id" class="card tpl-item" data-id="{{item.id}}" bindtap="onItemTap">
+      <view class="tpl-time {{item.timeText ? '' : 'no-time'}}">{{item.timeText || '随心安排'}}</view>
+      <view class="tpl-text">{{item.text}}</view>
+      <view class="tpl-more">›</view>
+    </view>
+
+    <view class="card form-card">
+      <view class="form-title">{{form.editingId ? '修改这一项' : '给' + weekdays[current - 1] + '添加计划'}}</view>
+      <input class="input-soft form-input" placeholder="要做什么？如：刷教综客观题" value="{{form.text}}" bindinput="onTextInput" />
+      <view class="time-row">
+        <picker mode="time" value="{{form.startText}}" bindchange="onStartChange">
+          <view class="time-pick {{form.startText ? '' : 'placeholder'}}">{{form.startText || '开始时间'}}</view>
+        </picker>
+        <view class="time-sep">—</view>
+        <picker mode="time" value="{{form.endText}}" bindchange="onEndChange">
+          <view class="time-pick {{form.endText ? '' : 'placeholder'}}">{{form.endText || '结束时间(可选)'}}</view>
+        </picker>
+        <view wx:if="{{form.endText}}" class="time-clear" bindtap="clearEnd">×</view>
+      </view>
+      <view class="form-btns">
+        <button wx:if="{{form.editingId}}" class="btn-ghost form-btn" bindtap="cancelEdit">取消</button>
+        <button class="btn-primary form-btn" bindtap="submit">{{form.editingId ? '保存修改' : '添加'}}</button>
+      </view>
+    </view>
+  </block>
+</view>

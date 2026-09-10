@@ -1,0 +1,29 @@
+{
+  "pages": [
+    "pages/today/today",
+    "pages/template/template",
+    "pages/import/import",
+    "pages/friend/friend"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#FFF6F1",
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "每日小计划",
+    "backgroundColor": "#FFF6F1",
+    "backgroundTextStyle": "light"
+  },
+  "tabBar": {
+    "color": "#B89B9B",
+    "selectedColor": "#FF8FA3",
+    "backgroundColor": "#FFFBF8",
+    "borderStyle": "white",
+    "list": [
+      { "pagePath": "pages/today/today", "text": "今日" },
+      { "pagePath": "pages/template/template", "text": "计划" },
+      { "pagePath": "pages/friend/friend", "text": "朋友" }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

@@ -1,0 +1,8 @@
+{
+  "name": "daily-plan-miniprogram",
+  "private": true,
+  "scripts": {
+    "test": "node --test",
+    "check": "node scripts/check-wxml.js"
+  }
+}

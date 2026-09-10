@@ -1,0 +1,62 @@
+<view class="page">
+  <view wx:if="{{cloudError}}" class="card error-card">
+    <view class="error-title">还没有连接上云服务</view>
+    <view class="error-text">请按 README 开通云开发、建好集合并部署 login 云函数，然后重新编译</view>
+  </view>
+
+  <block wx:else>
+    <view class="header">
+      <view class="header-left">
+        <view class="date">{{dateText}} · {{weekdayText}}</view>
+        <view class="greeting">{{greeting}}</view>
+        <view class="streak" wx:if="{{streak > 0}}">已连续打卡 <text class="streak-num">{{streak}}</text> 天</view>
+      </view>
+      <anpanman size="{{150}}" mood="{{allDone ? 'cheer' : 'happy'}}" animate="{{allDone}}" />
+    </view>
+
+    <view wx:if="{{hasTemplate}}" class="card progress-card">
+      <view class="progress-info">
+        <text>今日进度</text>
+        <text class="progress-num">{{doneCount}} / {{total}}</text>
+      </view>
+      <view class="progress-bar">
+        <view class="progress-inner" style="width:{{percent}}%"></view>
+      </view>
+      <view class="progress-tip" wx:if="{{allDone}}">全部完成啦，妳超棒的</view>
+      <view class="progress-tip" wx:elif="{{ongoingText}}">正在进行：{{ongoingText}}</view>
+    </view>
+
+    <view wx:if="{{!hasTemplate}}" class="card empty-card">
+      <anpanman size="{{180}}" mood="sleep" />
+      <view class="empty-title">今天还没有安排计划哦</view>
+      <view class="empty-sub">可以把备忘录里的计划整段粘贴进来</view>
+      <button class="btn-primary empty-btn" bindtap="goImport">导入我的计划</button>
+      <button class="btn-ghost empty-btn" bindtap="goTemplate">手动设定</button>
+    </view>
+
+    <view class="task-list">
+      <view wx:for="{{items}}" wx:key="id" data-id="{{item.id}}" bindtap="toggle"
+            class="card task-card {{item.done ? 'done' : ''}} st-{{item.status}}">
+        <view class="check {{item.done ? 'checked' : ''}}">
+          <text wx:if="{{item.done}}" class="check-mark">✓</text>
+        </view>
+        <view class="task-body">
+          <view class="task-text">{{item.text}}</view>
+          <view class="task-time" wx:if="{{item.timeText}}">{{item.timeText}}</view>
+        </view>
+        <view wx:if="{{!item.done && item.status === 'ongoing'}}" class="tag tag-ongoing">进行中</view>
+        <view wx:if="{{!item.done && item.status === 'past'}}" class="tag tag-past">错过啦</view>
+      </view>
+    </view>
+  </block>
+
+  <view wx:if="{{celebrating}}" class="celebrate-mask" bindtap="closeCelebrate">
+    <view wx:for="{{confetti}}" wx:key="index" class="confetti"
+          style="left:{{item.left}}%;background:{{item.color}};width:{{item.size}}rpx;height:{{item.size}}rpx;animation-delay:{{item.delay}}s"></view>
+    <view class="celebrate-box">
+      <anpanman size="{{220}}" mood="cheer" animate="{{true}}" />
+      <view class="praise">{{praise}}</view>
+      <view class="praise-sub">今日计划全部完成，点任意处收下夸夸</view>
+    </view>
+  </view>
+</view>

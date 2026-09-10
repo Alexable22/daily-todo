@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "今日计划",
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "anpanman": "/components/anpanman/anpanman"
+  }
+}

@@ -1,0 +1,33 @@
+<view class="page">
+  <view class="card paste-card">
+    <view class="paste-title">把计划整段粘贴进来</view>
+    <view class="paste-sub">支持「周一、周三」这样的星期标题，和「7.50-8.30 刷题」「14.00 起床」这样的时间写法；下午写成 6.40 会自动识别为 18:40</view>
+    <textarea class="input-soft paste-input" auto-height maxlength="-1"
+              placeholder="粘贴备忘录里的计划..." value="{{rawText}}" bindinput="onInput" />
+    <button class="btn-primary" bindtap="doParse">开始识别</button>
+  </view>
+
+  <view wx:for="{{sections}}" wx:for-item="sec" wx:for-index="secIdx" wx:key="key" class="card section-card">
+    <view class="section-title">第 {{secIdx + 1}} 段 · 保存到：</view>
+    <view class="wd-row">
+      <view wx:for="{{sec.days}}" wx:for-item="d" wx:key="day"
+            data-section="{{secIdx}}" data-day="{{d.day}}" bindtap="toggleWeekday"
+            class="wd-chip {{d.active ? 'active' : ''}}">{{d.name}}</view>
+    </view>
+    <view class="preview-list">
+      <view wx:for="{{sec.items}}" wx:for-item="it" wx:key="key" class="preview-item">
+        <view class="preview-time {{it.timeText ? '' : 'no-time'}}">{{it.timeText || '无时间'}}</view>
+        <view class="preview-text">{{it.text}}</view>
+        <view class="preview-del" data-section="{{secIdx}}" data-key="{{it.key}}" bindtap="removeItem">×</view>
+      </view>
+    </view>
+    <button class="btn-primary section-save" data-section="{{secIdx}}" bindtap="saveSection" disabled="{{saving}}">
+      保存这一段（{{sec.items.length}} 项）
+    </button>
+  </view>
+
+  <view wx:if="{{parsed && sections.length === 0}}" class="card done-card">
+    <view class="done-title">全部都保存好啦</view>
+    <button class="btn-ghost done-btn" bindtap="goTemplate">去看看每周计划</button>
+  </view>
+</view>
