@@ -11,7 +11,7 @@
 
 ## 首次配置（约 5 分钟）
 
-1. 微信开发者工具 → 导入本目录（`D:\mine-websites\todo`），`project.config.json` 里的 `appid` 改成自己的小程序 AppID
+1. 微信开发者工具 → 导入本仓库根目录，`project.config.json` 里的 `appid` 改成自己的小程序 AppID
 2. 工具栏点「云开发」→ 开通（免费额度自用足够）→ 记下环境 ID；如果只有一个环境，`miniprogram/env.js` 可留空，多个环境则填入目标环境 ID
 3. 云开发控制台 → 数据库 → 新建 3 个集合：`templates`、`records`、`binds`，权限都选「仅创建者可读写」
 4. 右键 `cloudfunctions/login` → 「上传并部署：云端安装依赖」；`cloudfunctions/friendToday` 同样操作
