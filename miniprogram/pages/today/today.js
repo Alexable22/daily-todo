@@ -2,7 +2,7 @@ const { WEEKDAYS, weekdayOf, todayStr, nowMinutes, fmtMin } = require('../../uti
 
 const PRAISES = [
   '太棒了！今天的计划全部完成',
-  '面包超人为妳用力鼓掌',
+  '面包小人为妳用力鼓掌',
   '认真过完的一天，值得被奖励',
   '妳努力的样子真的在发光',
   '全部打卡成功，好厉害呀'
@@ -48,7 +48,6 @@ function makeGreeting(hour) {
 
 Page({
   data: {
-    cloudError: false,
     dateText: '',
     weekdayText: '',
     greeting: '',
@@ -67,9 +66,8 @@ Page({
   },
 
   timer: null,
-  recordId: '',
+  recordKey: '',
   recordReady: false,
-  openid: '',
 
   onShow() {
     this.startTimer()
@@ -127,25 +125,13 @@ Page({
       weekdayText: WEEKDAYS[weekdayOf(now) - 1],
       greeting: makeGreeting(now.getHours())
     })
-    const openid = await getApp().ready
-    if (!openid) {
-      this.setData({ cloudError: true })
-      return
-    }
-    this.openid = openid
-    this.setData({ cloudError: false })
-    const db = wx.cloud.database()
     const date = todayStr(now)
     const wd = weekdayOf(now)
     try {
-      const [tplRes, recRes] = await Promise.all([
-        db.collection('templates').where({ weekday: wd }).limit(1).get(),
-        db.collection('records').where({ date }).limit(1).get()
-      ])
-      const tpl = tplRes.data[0]
-      const record = recRes.data[0]
+      const tpl = wx.getStorageSync(`tpl_${wd}`) || null
+      const record = wx.getStorageSync(`rec_${date}`) || null
       if (!tpl || !tpl.items || !tpl.items.length) {
-        this.recordId = ''
+        this.recordKey = ''
         this.recordReady = false
         this.setData({ hasTemplate: false, items: [], checks: {}, doneCount: 0, total: 0, percent: 0, allDone: false, ongoingText: '' })
         this.loadStreak()
@@ -154,8 +140,7 @@ Page({
       // 以模板为准调和勾选状态：模板删掉的项丢弃，新增的项补 false
       const checks = {}
       for (const it of tpl.items) checks[it.id] = !!(record && record.checks && record.checks[it.id])
-      this.recordId = `${openid}_${date}`
-      this.recordReady = false
+      this.recordKey = `rec_${date}`
       const recordData = {
         date,
         checks,
@@ -163,30 +148,12 @@ Page({
         total: tpl.items.length,
         allDone: tpl.items.every(it => checks[it.id])
       }
-      // 必须等记录落库后才放行勾选，否则首次进入时 update 会打在尚不存在的文档上
       const stale = !record
         || JSON.stringify(record.checks) !== JSON.stringify(checks)
         || record.total !== recordData.total
         || record.doneCount !== recordData.doneCount
         || record.allDone !== recordData.allDone
-      if (!record) {
-        const ok = await db.collection('records').add({ _id: this.recordId, data: recordData })
-          .then(() => true)
-          .catch(err => {
-            console.error('创建今日记录失败', err)
-            return false
-          })
-        // 记录没建成就放行勾选会导致勾选静默丢失，宁可提示重试
-        if (!ok) {
-          this.recordId = ''
-          wx.showToast({ title: '云端同步失败，请下拉重试', icon: 'none' })
-          return
-        }
-      } else if (stale) {
-        // 文档已存在时同步失败不阻塞勾选，后续 toggle 的 update 会自愈
-        await db.collection('records').doc(this.recordId).update({ data: recordData })
-          .catch(err => console.error('同步今日记录失败', err))
-      }
+      if (stale) wx.setStorageSync(this.recordKey, recordData)
       this.recordReady = true
       this.setData({ hasTemplate: true, checks })
       this.applyView(tpl.items, checks)
@@ -197,12 +164,14 @@ Page({
     }
   },
 
-  async loadStreak() {
-    const db = wx.cloud.database()
+  loadStreak() {
     try {
-      const res = await db.collection('records').where({ allDone: true })
-        .field({ date: true }).orderBy('date', 'desc').limit(120).get()
-      const doneDates = new Set(res.data.map(r => r.date))
+      const doneDates = new Set()
+      for (const key of wx.getStorageInfoSync().keys) {
+        if (key.indexOf('rec_') !== 0) continue
+        const r = wx.getStorageSync(key)
+        if (r && r.allDone && r.date) doneDates.add(r.date)
+      }
       const cursor = new Date()
       // 今天还没全部完成时，连续天数从昨天往回算
       if (!doneDates.has(todayStr(cursor))) cursor.setDate(cursor.getDate() - 1)
@@ -218,7 +187,7 @@ Page({
   },
 
   toggle(e) {
-    if (!this.recordId || !this.recordReady) return
+    if (!this.recordKey || !this.recordReady) return
     const id = e.currentTarget.dataset.id
     const checks = Object.assign({}, this.data.checks, { [id]: !this.data.checks[id] })
     wx.vibrateShort({ type: 'light' }).catch(() => {})
@@ -226,13 +195,18 @@ Page({
     this.applyView(this.data.items, checks)
     const doneCount = this.data.items.filter(it => checks[it.id]).length
     const allDone = this.data.total > 0 && doneCount === this.data.total
-    const db = wx.cloud.database()
-    db.collection('records').doc(this.recordId)
-      .update({ data: { checks, doneCount, allDone, updatedAt: db.serverDate() } })
-      .catch(err => {
-        console.error('更新勾选失败', err)
-        wx.showToast({ title: '保存失败，请检查网络', icon: 'none' })
+    try {
+      wx.setStorageSync(this.recordKey, {
+        date: this.recordKey.slice(4),
+        checks,
+        doneCount,
+        total: this.data.total,
+        allDone
       })
+    } catch (err) {
+      console.error('更新勾选失败', err)
+      wx.showToast({ title: '保存失败，请重试', icon: 'none' })
+    }
     if (allDone) {
       this.celebrate()
     }

@@ -1,5 +1,4 @@
 const { WEEKDAYS, weekdayOf, fmtMin, hmToMin } = require('../../utils/time')
-const { upsertDoc } = require('../../utils/cloud')
 
 function genId() {
   return `i${Date.now().toString(36)}${Math.floor(Math.random() * 1e4).toString(36)}`
@@ -27,21 +26,12 @@ Page({
     current: 1,
     items: [],
     loading: true,
-    cloudError: false,
     form: { text: '', startText: '', endText: '', editingId: '' }
   },
 
   inited: false,
-  openid: '',
 
-  async onShow() {
-    const openid = await getApp().ready
-    if (!openid) {
-      this.setData({ cloudError: true, loading: false })
-      return
-    }
-    this.openid = openid
-    this.setData({ cloudError: false })
+  onShow() {
     if (!this.inited) {
       this.inited = true
       this.setData({ current: weekdayOf() })
@@ -49,18 +39,10 @@ Page({
     this.load()
   },
 
-  async load() {
-    this.setData({ loading: true })
-    const db = wx.cloud.database()
-    try {
-      const res = await db.collection('templates').where({ weekday: this.data.current }).limit(1).get()
-      const items = (res.data[0] && res.data[0].items) || []
-      this.setData({ items: items.map(withTimeText), loading: false })
-    } catch (err) {
-      console.error('加载模板失败', err)
-      this.setData({ loading: false })
-      wx.showToast({ title: '加载失败，请重试', icon: 'none' })
-    }
+  load() {
+    const tpl = wx.getStorageSync(`tpl_${this.data.current}`) || null
+    const items = (tpl && tpl.items) || []
+    this.setData({ items: items.map(withTimeText), loading: false })
   },
 
   switchDay(e) {
@@ -160,12 +142,11 @@ Page({
     this.save(items)
   },
 
-  async save(items) {
+  save(items) {
     try {
-      await upsertDoc('templates', `${this.openid}_${this.data.current}`, {
+      wx.setStorageSync(`tpl_${this.data.current}`, {
         weekday: this.data.current,
-        items: items.map(({ id, startMin, endMin, text }) => ({ id, startMin, endMin, text })),
-        updatedAt: wx.cloud.database().serverDate()
+        items: items.map(({ id, startMin, endMin, text }) => ({ id, startMin, endMin, text }))
       })
       wx.showToast({ title: '已保存', icon: 'success' })
     } catch (err) {

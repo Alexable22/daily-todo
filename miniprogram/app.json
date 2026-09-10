@@ -2,8 +2,7 @@
   "pages": [
     "pages/today/today",
     "pages/template/template",
-    "pages/import/import",
-    "pages/friend/friend"
+    "pages/import/import"
   ],
   "window": {
     "navigationBarBackgroundColor": "#FFF6F1",
@@ -19,8 +18,7 @@
     "borderStyle": "white",
     "list": [
       { "pagePath": "pages/today/today", "text": "今日" },
-      { "pagePath": "pages/template/template", "text": "计划" },
-      { "pagePath": "pages/friend/friend", "text": "朋友" }
+      { "pagePath": "pages/template/template", "text": "计划" }
     ]
   },
   "style": "v2",

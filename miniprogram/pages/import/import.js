@@ -1,6 +1,5 @@
 const { parseSchedule } = require('../../utils/parser')
 const { WEEKDAYS, weekdayOf, fmtMin } = require('../../utils/time')
-const { upsertDoc } = require('../../utils/cloud')
 
 function itemTimeText(it) {
   if (it.startMin == null) return ''
@@ -88,35 +87,22 @@ Page({
       wx.showToast({ title: '这一段没有可保存的计划项', icon: 'none' })
       return
     }
-    const openid = await getApp().ready
-    if (!openid) {
-      wx.showToast({ title: '云服务未配置', icon: 'none' })
-      return
-    }
-    const db = wx.cloud.database()
-    const _ = db.command
-    try {
-      const exist = await db.collection('templates')
-        .where({ weekday: _.in(sec.selected) })
-        .field({ weekday: true })
-        .get()
-      if (exist.data.length) {
-        const names = exist.data.map(d => WEEKDAYS[d.weekday - 1]).sort().join('、')
-        const ok = await new Promise(resolve =>
-          wx.showModal({
-            title: '覆盖确认',
-            content: `${names} 已有计划，保存会覆盖原来的内容`,
-            confirmText: '覆盖',
-            cancelText: '再想想',
-            success: r => resolve(r.confirm)
-          })
-        )
-        if (!ok) return
-      }
-    } catch (err) {
-      console.error('检查已有模板失败', err)
-      wx.showToast({ title: '网络异常，请重试', icon: 'none' })
-      return
+    const existedDays = sec.selected.filter(d => {
+      const t = wx.getStorageSync(`tpl_${d}`)
+      return t && t.items && t.items.length
+    })
+    if (existedDays.length) {
+      const names = existedDays.map(d => WEEKDAYS[d - 1]).join('、')
+      const ok = await new Promise(resolve =>
+        wx.showModal({
+          title: '覆盖确认',
+          content: `${names} 已有计划，保存会覆盖原来的内容`,
+          confirmText: '覆盖',
+          cancelText: '再想想',
+          success: r => resolve(r.confirm)
+        })
+      )
+      if (!ok) return
     }
 
     this.setData({ saving: true })
@@ -128,11 +114,7 @@ Page({
           endMin: it.endMin,
           text: it.text
         }))
-        await upsertDoc('templates', `${openid}_${day}`, {
-          weekday: day,
-          items,
-          updatedAt: db.serverDate()
-        })
+        wx.setStorageSync(`tpl_${day}`, { weekday: day, items })
       }
       const names = sec.selected.map(d => WEEKDAYS[d - 1]).join('、')
       const rest = this.data.sections.filter(s => s.key !== sec.key)

@@ -154,19 +154,3 @@
   flex: 1;
   margin: 0 8rpx;
 }
-
-.error-card {
-  margin-top: 80rpx;
-  padding: 48rpx 40rpx;
-  text-align: center;
-}
-.error-title {
-  font-size: 32rpx;
-  font-weight: 600;
-}
-.error-text {
-  margin-top: 16rpx;
-  font-size: 25rpx;
-  color: #B08E8E;
-  line-height: 1.6;
-}

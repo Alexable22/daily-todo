@@ -181,23 +181,6 @@
   color: #B08E8E;
 }
 
-/* 云未配置 */
-.error-card {
-  margin-top: 80rpx;
-  padding: 48rpx 40rpx;
-  text-align: center;
-}
-.error-title {
-  font-size: 32rpx;
-  font-weight: 600;
-}
-.error-text {
-  margin-top: 16rpx;
-  font-size: 25rpx;
-  color: #B08E8E;
-  line-height: 1.6;
-}
-
 /* 庆祝遮罩 */
 .celebrate-mask {
   position: fixed;
