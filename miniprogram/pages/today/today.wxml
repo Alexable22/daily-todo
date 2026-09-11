@@ -6,7 +6,7 @@
       <view class="streak" wx:if="{{streak > 0}}">已连续打卡 <text class="streak-num">{{streak}}</text> 天</view>
     </view>
     <view class="mascot-zone" bindtap="pokeMascot" hover-class="mascot-hover">
-      <anpanman size="{{150}}" src="{{allDone ? '/assets/mascot/cheer.png' : '/assets/mascot/happy.png'}}" animate="{{allDone}}" poke-seed="{{pokeSeed}}" />
+      <anpanman size="{{150}}" src="{{mascotSrc}}" mood="{{mascotMood}}" animate="{{allDone}}" poke-seed="{{pokeSeed}}" />
       <view wx:if="{{bubbleShow}}" class="poke-bubble">{{bubbleText}}</view>
     </view>
   </view>
@@ -34,7 +34,7 @@
   <view class="task-list">
     <view wx:for="{{items}}" wx:key="id" data-id="{{item.id}}" bindtap="toggle"
           class="card task-card {{item.done ? 'done' : ''}} st-{{item.status}}">
-      <view class="check {{item.done ? 'checked' : ''}}">
+      <view class="check {{item.done ? 'checked' : ''}}" id="check-{{item.id}}">
         <text wx:if="{{item.done}}" class="check-mark">✓</text>
       </view>
       <view class="task-body">
@@ -44,6 +44,12 @@
       <view wx:if="{{!item.done && item.status === 'ongoing'}}" class="tag tag-ongoing">进行中</view>
       <view wx:if="{{!item.done && item.status === 'past'}}" class="tag tag-past">错过啦</view>
     </view>
+  </view>
+
+  <view wx:for="{{bursts}}" wx:key="key" class="burst-layer">
+    <view wx:for="{{item.particles}}" wx:for-item="p" wx:key="index"
+          class="burst-p {{p.round ? 'round' : ''}}"
+          style="left:{{p.x}}px;top:{{p.y}}px;width:{{p.size}}px;height:{{p.size}}px;background:{{p.color}};opacity:{{p.o}};transform:scale({{p.s}})"></view>
   </view>
 
   <view wx:if="{{celebrating}}" class="celebrate-mask" bindtap="closeCelebrate">

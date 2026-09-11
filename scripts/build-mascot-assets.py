@@ -5,7 +5,7 @@
 import sys
 from collections import deque
 from pathlib import Path
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFilter
 
 SRC = Path(sys.argv[1] if len(sys.argv) > 1 else 'screenshots')
 DST = Path(__file__).resolve().parent.parent / 'miniprogram' / 'assets' / 'mascot'
@@ -16,6 +16,8 @@ JOBS = [
     ('beb9a55adf8b3e987547b78a9d46f8a5.jpg', (59, 830, 1028, 1028), 'cheer.png', 680, 'flood'),     # 披风飞翔，黄底
     ('f37e8cfdc725375ba9623d3d14cf8331.jpg', (213, 640, 780, 780), 'wave.png', 480, 'flood'),       # 蓝帽挥手半身，白底
     ('262075cc443cb6565e1c479e199e56ac.jpg', (249, 1041, 734, 734), 'rest.jpg', 640, None),         # 坐火车发呆（保留场景）
+    ('f0d49aa2cb2aaba6b9e625957a98b687.jpg', (202, 642, 800, 800), 'hungry.png', 480, 'flood', 2),  # 乖巧微笑大脸（饿着状态），白底，腐蚀 2px 去白晕
+    ('2024e5acc0585a59383182b2ccabd698.jpg', (170, 773, 865, 865), 'donut.png', 560, 'flood'),      # 甜甜圈套脸，粉底
 ]
 
 def color_dist(a, b):
@@ -68,7 +70,7 @@ def flood_key(img, tol=32):
 
 def main():
     DST.mkdir(parents=True, exist_ok=True)
-    for name, (x, y, w, h), out, target_w, key in JOBS:
+    for name, (x, y, w, h), out, target_w, key, *rest in JOBS:
         img = Image.open(SRC / name).crop((x, y, x + w, y + h))
         if key == 'ellipse':
             img, mask = ellipse_key(img)
@@ -76,6 +78,9 @@ def main():
                 img.putalpha(mask)
         elif key == 'flood':
             img, _ = flood_key(img)
+            if rest and rest[0]:
+                # 白底图的描边外会残留一圈浅灰晕，腐蚀 alpha 通道吃掉它
+                img.putalpha(img.getchannel('A').filter(ImageFilter.MinFilter(rest[0] * 2 + 1)))
         if img.width > target_w:
             img = img.resize((target_w, round(img.height * target_w / img.width)), Image.LANCZOS)
         path = DST / out

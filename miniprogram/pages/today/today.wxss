@@ -73,6 +73,25 @@
   100% { opacity: 1; transform: translateY(0); }
 }
 
+/* 勾选瞬间粒子小爆花：JS 两段式 setData（先聚集在圆心，再扩散到外围），这里只负责过渡 */
+.burst-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  pointer-events: none;
+}
+.burst-p {
+  position: absolute;
+  border-radius: 30%;
+  transition: left 0.55s cubic-bezier(0.15, 0.85, 0.35, 1),
+              top 0.55s cubic-bezier(0.15, 0.85, 0.35, 1),
+              opacity 0.55s ease-out,
+              transform 0.55s cubic-bezier(0.15, 0.85, 0.35, 1);
+}
+.burst-p.round {
+  border-radius: 50%;
+}
+
 /* 进度卡 */
 .progress-card {
   margin-top: 20rpx;
