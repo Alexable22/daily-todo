@@ -138,14 +138,6 @@ function makeGreeting(hour) {
   return '晚上好，收尾今天吧'
 }
 
-// 投喂状态：一项没完成时瘪瘪的，过半吃到甜甜圈，全完成起飞庆祝
-function mascotFor(doneCount, total) {
-  if (total === 0 || doneCount === 0) return { src: '/assets/mascot/hungry.png', mood: 'hungry' }
-  if (doneCount === total) return { src: '/assets/mascot/cheer.png', mood: 'happy' }
-  if (doneCount * 2 >= total) return { src: '/assets/mascot/donut.png', mood: 'donut' }
-  return { src: '/assets/mascot/happy.png', mood: 'happy' }
-}
-
 Page({
   data: {
     dateText: '',
@@ -166,8 +158,6 @@ Page({
     pokeSeed: 0,
     bubbleText: '',
     bubbleShow: false,
-    mascotSrc: '/assets/mascot/hungry.png',
-    mascotMood: 'hungry',
     bursts: []
   },
 
@@ -243,16 +233,13 @@ Page({
     const doneCount = list.filter(it => it.done).length
     const total = list.length
     const allDone = total > 0 && doneCount === total
-    const mascot = mascotFor(doneCount, total)
     this.setData({
       items: list,
       doneCount,
       total,
       allDone,
       percent: total ? Math.round((doneCount / total) * 100) : 0,
-      ongoingText: findOngoing(list),
-      mascotSrc: mascot.src,
-      mascotMood: mascot.mood
+      ongoingText: findOngoing(list)
     })
   },
 
@@ -271,7 +258,7 @@ Page({
       if (!tpl || !tpl.items || !tpl.items.length) {
         this.recordKey = ''
         this.recordReady = false
-        this.setData({ hasTemplate: false, items: [], checks: {}, doneCount: 0, total: 0, percent: 0, allDone: false, ongoingText: '', mascotSrc: '/assets/mascot/hungry.png', mascotMood: 'hungry' })
+        this.setData({ hasTemplate: false, items: [], checks: {}, doneCount: 0, total: 0, percent: 0, allDone: false, ongoingText: '' })
         this.loadStreak()
         return
       }

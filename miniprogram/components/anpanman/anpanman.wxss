@@ -142,20 +142,6 @@
   animation: poke 0.5s ease-out;
 }
 
-/* 投喂状态（真图模式）：饿着＝缩小+褪色显得没精神，甜甜圈＝满足地轻轻晃 */
-.mood-hungry .mascot-img {
-  transform: scale(0.9);
-  opacity: 0.82;
-  filter: saturate(0.55);
-}
-.mood-donut .mascot-img {
-  animation: donutSway 2.6s ease-in-out infinite;
-}
-@keyframes donutSway {
-  0%, 100% { transform: rotate(-3deg); }
-  50% { transform: rotate(3deg); }
-}
-
 @keyframes poke {
   0% { transform: scale(1, 1); }
   30% { transform: scale(1.14, 0.84); }

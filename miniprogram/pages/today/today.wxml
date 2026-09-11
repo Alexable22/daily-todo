@@ -6,7 +6,7 @@
       <view class="streak" wx:if="{{streak > 0}}">已连续打卡 <text class="streak-num">{{streak}}</text> 天</view>
     </view>
     <view class="mascot-zone" bindtap="pokeMascot" hover-class="mascot-hover">
-      <anpanman size="{{150}}" src="{{mascotSrc}}" mood="{{mascotMood}}" animate="{{allDone}}" poke-seed="{{pokeSeed}}" />
+      <anpanman size="{{150}}" src="/assets/mascot/cheer.png" animate="{{allDone}}" poke-seed="{{pokeSeed}}" />
       <view wx:if="{{bubbleShow}}" class="poke-bubble">{{bubbleText}}</view>
     </view>
   </view>
