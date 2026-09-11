@@ -15,7 +15,7 @@
   </view>
 
   <view wx:if="{{!loading && items.length === 0}}" class="card empty-card">
-    <anpanman size="{{150}}" mood="happy" />
+    <anpanman size="{{170}}" src="/assets/mascot/wave.png" />
     <view class="empty-title">{{weekdays[current - 1]}}还没有计划</view>
     <view class="empty-sub">在下方添加，或去批量导入</view>
   </view>
