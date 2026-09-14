@@ -19,7 +19,7 @@
     <view class="progress-bar">
       <view class="progress-inner" style="width:{{percent}}%"></view>
     </view>
-    <view class="progress-tip" wx:if="{{allDone}}">全部完成啦，妳超棒的</view>
+    <view class="progress-tip" wx:if="{{allDone}}">全部完成啦，你超棒的</view>
     <view class="progress-tip" wx:elif="{{ongoingText}}">正在进行：{{ongoingText}}</view>
   </view>
 
