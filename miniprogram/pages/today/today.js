@@ -82,7 +82,7 @@ const SCENE_QUOTES = {
   dusk: [
     '傍晚啦，回头看看今天的战果',
     '晚饭吃热乎的，胃暖了心才暖',
-    '今天的尾巴了，收个漂亮的官吧',
+    '今天的尾巴了，漂亮收官吧',
     '晚霞是草莓味的，和妳很配'
   ],
   night: [
@@ -229,6 +229,7 @@ Page({
 
   onUnload() {
     this.clearTransient()
+    if (wx.offUserCaptureScreen) wx.offUserCaptureScreen()
   },
 
   clearTransient() {
@@ -547,6 +548,10 @@ Page({
 
   // 截屏被抓到：弹一张小卡片，2.6 秒自动收，也可点掉
   onCapture() {
+    // 监听是 App 级的，用户在别的页面截屏也会进来；只有今日页正在前台时才接梗，别凭空震动
+    const pages = getCurrentPages()
+    const top = pages[pages.length - 1]
+    if (!top || top.route !== 'pages/today/today') return
     if (this.data.celebrating || this.data.captureShow) return
     this.setData({
       captureShow: true,

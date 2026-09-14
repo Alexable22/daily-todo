@@ -20,7 +20,14 @@ Page({
     parsed: false,
     saving: false,
     savedCount: 0,
-    backupText: ''
+    backupText: '',
+    canUndo: false
+  },
+
+  onShow() {
+    let has = false
+    try { has = !!wx.getStorageSync('prerestore_backup') } catch (err) {}
+    this.setData({ canUndo: has })
   },
 
   onInput(e) {
@@ -156,7 +163,8 @@ Page({
           title: '已复制备份',
           content: `共 ${res.count} 条数据。打开手机备忘录粘贴保存好，恢复时复制它粘到下面就行`,
           showCancel: false
-        })
+        }),
+        fail: () => wx.showToast({ title: '复制失败，请重试', icon: 'none' })
       })
     } catch (err) {
       console.error('导出备份失败', err)
@@ -197,6 +205,44 @@ Page({
     } catch (err) {
       console.error('恢复备份失败', err)
       wx.showToast({ title: '恢复失败，请重试', icon: 'none' })
+    }
+  },
+
+  // 恢复前留的底只够退一步：撤销后快照即清空，再恢复会重新留今天的底
+  async undoRestore() {
+    let snap = ''
+    try { snap = wx.getStorageSync('prerestore_backup') || '' } catch (err) {}
+    if (!snap) {
+      this.setData({ canUndo: false })
+      wx.showToast({ title: '没有可撤销的恢复', icon: 'none' })
+      return
+    }
+    const res = parseBackup(snap)
+    if (!res.ok) {
+      try { wx.removeStorageSync('prerestore_backup') } catch (err) {}
+      this.setData({ canUndo: false })
+      wx.showToast({ title: '留底已失效', icon: 'none' })
+      return
+    }
+    const count = Object.keys(res.data).length
+    const ok = await new Promise(resolve =>
+      wx.showModal({
+        title: '撤销上次恢复',
+        content: `会把 ${count} 条数据退回恢复前的样子，恢复之后又改过的会被覆盖`,
+        confirmText: '撤销',
+        cancelText: '再想想',
+        success: r => resolve(r.confirm)
+      })
+    )
+    if (!ok) return
+    try {
+      applyBackup((k, v) => wx.setStorageSync(k, v), res.data)
+      try { wx.removeStorageSync('prerestore_backup') } catch (err) {}
+      this.setData({ canUndo: false })
+      wx.showToast({ title: `已退回 ${count} 条数据`, icon: 'success' })
+    } catch (err) {
+      console.error('撤销恢复失败', err)
+      wx.showToast({ title: '撤销失败，请重试', icon: 'none' })
     }
   }
 })

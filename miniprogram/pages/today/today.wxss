@@ -203,7 +203,7 @@
   width: 10rpx;
   left: 2rpx;
   transform-origin: 100% 50%;
-  transform: rotate(-45deg) scaleX(0);
+  transform: rotate(45deg) scaleX(0);
   animation: drawA1 0.16s ease-out 0.05s forwards;
 }
 .cm-a2 {
@@ -214,7 +214,7 @@
   animation: drawA2 0.22s ease-out 0.18s forwards;
 }
 @keyframes drawA1 {
-  to { transform: rotate(-45deg) scaleX(1); }
+  to { transform: rotate(45deg) scaleX(1); }
 }
 @keyframes drawA2 {
   to { transform: rotate(-45deg) scaleX(1); }
@@ -225,7 +225,6 @@
   min-width: 0;
 }
 .task-text {
-  position: relative;
   font-size: 30rpx;
   color: #6B4F4F;
   line-height: 1.45;
@@ -237,25 +236,15 @@
   color: #B08E8E;
 }
 
-/* 已完成：划线像被笔划掉一样横向长出来 */
+/* 已完成：划线随文字淡入。text-decoration 对每一行各自生效，长任务名折行也能划对 */
 .task-card.done .task-text {
   color: #CDB6B6;
+  text-decoration: line-through;
+  text-decoration-color: rgba(227, 190, 190, 0);
+  animation: strikeIn 0.32s ease-out 0.1s forwards;
 }
-.task-card.done .task-text::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  width: 100%;
-  height: 3rpx;
-  background: #E3BEBE;
-  border-radius: 2rpx;
-  transform-origin: left center;
-  transform: scaleX(0);
-  animation: strikeDraw 0.32s ease-out 0.1s forwards;
-}
-@keyframes strikeDraw {
-  to { transform: scaleX(1); }
+@keyframes strikeIn {
+  to { text-decoration-color: #E3BEBE; }
 }
 .task-card.done .task-time {
   color: #DCC9C9;
@@ -303,7 +292,12 @@
   background: #FFFBF8;
   border-radius: 32rpx;
   box-shadow: 0 12rpx 40rpx rgba(107, 79, 79, 0.22);
-  animation: bubbleIn 0.25s ease-out;
+  /* 关键帧里必须带上 translateX(-50%)，否则动画期间会覆盖居中偏移、卡片先跳右再弹回 */
+  animation: captureIn 0.25s ease-out;
+}
+@keyframes captureIn {
+  0% { opacity: 0; transform: translate(-50%, -8rpx); }
+  100% { opacity: 1; transform: translate(-50%, 0); }
 }
 .capture-text {
   margin-top: 10rpx;

@@ -39,5 +39,6 @@
               placeholder="恢复时，把备份文本粘贴到这里..." placeholder-class="ph" placeholder-style="color: #A58383"
               value="{{backupText}}" bindinput="onBackupInput" />
     <button class="btn-ghost backup-btn" bindtap="restoreBackup">从备份恢复</button>
+    <button wx:if="{{canUndo}}" class="btn-ghost backup-btn" bindtap="undoRestore">撤销上次恢复</button>
   </view>
 </view>

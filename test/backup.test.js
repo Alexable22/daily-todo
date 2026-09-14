@@ -50,8 +50,8 @@ test('parseBackup 拒绝非 JSON 文本', () => {
   assert.ok(res.error)
 })
 
-test('parseBackup 拒绝版本号不符', () => {
-  const res = parseBackup(JSON.stringify({ v: 2, data: {} }))
+test('parseBackup 拒绝版本号不符（即使数据本身有效）', () => {
+  const res = parseBackup(JSON.stringify({ v: 2, data: { tpl_1: { items: [] } } }))
   assert.strictEqual(res.ok, false)
 })
 
