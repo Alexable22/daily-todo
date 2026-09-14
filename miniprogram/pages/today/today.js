@@ -1,11 +1,34 @@
 const { WEEKDAYS, weekdayOf, todayStr, nowMinutes, fmtMin } = require('../../utils/time')
 
 const PRAISES = [
-  '太棒了！今天的计划全部完成',
-  '面包小人为妳用力鼓掌',
-  '认真过完的一天，值得被奖励',
-  '妳努力的样子真的在发光',
-  '全部打卡成功，好厉害呀'
+  '全部完成！心爱今天也是满分小面包',
+  '计划清空！妳努力的样子在发光呀',
+  '打卡全成功，奖励自己一块小蛋糕吧',
+  '今天的心爱，比刚出炉的面包还棒',
+  '全部搞定！妳就是教招卷王本王',
+  '完美好收工，明天也要来找我哦'
+]
+
+// 连击达到 2 天以上时，庆祝语有概率换成带天数的版本
+const STREAK_PRAISES = [
+  '连续 {n} 天全完成！心爱是坚持小天才',
+  '{n} 天连击！面包小人激动得转圈圈',
+  '连赢 {n} 天，这个战绩值得截图炫耀'
+]
+
+const STREAK_QUOTES = [
+  '已经连着 {n} 天全完成啦，心爱好厉害',
+  '{n} 天连击中，妳是面包小镇最闪的星',
+  '连续 {n} 天！再坚持一下就是传说啦',
+  '偷偷数了数，妳已经连赢 {n} 天了哦'
+]
+
+// 截屏被抓包时的台词
+const CAPTURE_QUOTES = [
+  '咔嚓！心爱认真的样子被存下来啦',
+  '被拍到咯，比个耶',
+  '这一刻的努力，截图为证！',
+  '偷拍成功，原来是心爱在学习'
 ]
 
 const CONFETTI_COLORS = ['#FF8FA3', '#FFC9A9', '#FFD6DC', '#B5E0C8', '#A9C9FF', '#FFE08A']
@@ -13,75 +36,77 @@ const CONFETTI_COLORS = ['#FF8FA3', '#FFC9A9', '#FFD6DC', '#B5E0C8', '#A9C9FF', 
 const BURST_COLORS = ['#FF8FA3', '#FFB3C1', '#FFC9D4', '#FCD9A0', '#FFE9C4']
 
 const POKE_QUOTES = [
-  '戳我做什么啦，嘿嘿',
-  '加油加油，我陪着妳呢',
-  '今天也是元气满满的一天',
-  '累了就休息一会儿，没关系',
-  '妳认真的样子，超可爱',
-  '完成了记得第一时间告诉我',
-  '慢慢来，一步一步就好',
-  '面包力量，传给妳！',
-  '偷偷说：妳比昨天更厉害了',
-  '学习辛苦啦，摸摸头'
+  '戳我干嘛，快去写题啦小懒虫',
+  '再戳再戳就把面包分妳一半',
+  '我在呢，陪心爱一起熬教综',
+  '偷偷说：妳比我可爱一点点',
+  '刷题累了？来，抱一下再走',
+  '今天的妳，也是元气满满的小太阳',
+  '别看我啦，看妳的计划表去',
+  '面包力量注入中……好啦，冲！',
+  '妳认真的侧脸，是面包店最好的风景',
+  '摸鱼被我抓到啦，嘿嘿不说出去',
+  '慢慢来，面包烤急了会糊的',
+  '错题本想妳了，快去看看它'
 ]
 
 // 面包超人的一天：按 时段 × 完成状态 分桶的场景语录，{task} 会替换成进行中的任务名
 const SCENE_QUOTES = {
   dawn: [
-    '早安呀，新的一天从一口面包开始',
-    '起床啦，今天的计划已经在等妳了',
-    '早上记忆力最好哦，先啃最难的那块',
-    '吃早餐了吗？空腹背书会饿扁的',
-    '清晨的第一口元气，分妳一半'
+    '早安心爱！新的一天从一口热面包开始',
+    '起床啦，太阳晒面包屁股咯',
+    '早上脑子最清醒，先把最难的那块啃掉',
+    '不吃早餐就背书，会饿成小面包干的',
+    '清晨第一缕元气，分妳一大半'
   ],
   forenoon: [
-    '上午阳光正好，适合刷题',
-    '一项一项来，我在旁边给妳数数',
-    '学累了就喝口水，望望远处',
-    '妳专注的样子，像刚出炉的面包一样香',
-    '上午的任务完成一半了吗？加油呀'
+    '上午阳光正好，适合和刷题贴贴',
+    '一项一项来，我在旁边帮妳数着呢',
+    '学累了？喝水，抬头，看窗外三秒钟',
+    '专注的心爱，像刚出炉的吐司一样香',
+    '上午进度过半了吗？过半奖励奶茶（自己买）'
   ],
   noon: [
-    '中午好，先吃饭再学习哦',
-    '午休二十分钟，下午效率翻倍',
-    '吃饱才有力气背书，这是我的面包哲学',
-    '午饭时间到，计划先放一放也没关系'
+    '中午好，饭要吃饱，书才背得动',
+    '午休二十分钟，下午效率直接翻倍',
+    '吃饱才有力气学习，这是面包的哲学',
+    '先吃饭！计划不会跑，饭会凉'
   ],
   afternoon: [
-    '下午最容易犯困，站起来拉伸一下',
-    '坚持住，傍晚就在前面啦',
-    '错题本是妳的好朋友，多翻翻',
-    '偷偷给妳加了面包能量，继续冲',
-    '做完这一科，就离全部完成更近一步'
+    '下午最容易犯困，站起来晃两圈',
+    '犯困的话，捏捏自己的小脸醒一醒',
+    '错题本是妳的好朋友，常回来看看它',
+    '偷偷给妳的面包加了果酱，继续冲',
+    '还有几项没勾？它们在排队等妳宠幸呢'
   ],
   dusk: [
-    '傍晚啦，回头看看今天完成了多少',
-    '晚饭记得吃热的，暖暖胃',
-    '今天剩下的不多了，收尾冲刺',
-    '晚霞是粉色的，和妳的计划表很配'
+    '傍晚啦，回头看看今天的战果',
+    '晚饭吃热乎的，胃暖了心才暖',
+    '今天的尾巴了，收个漂亮的官吧',
+    '晚霞是草莓味的，和妳很配'
   ],
   night: [
     '夜深了，做不完就明天再说，我不怪妳',
-    '今天到这里就好啦，剩下的明天我陪妳',
-    '别熬太晚，黑眼圈会吃掉面包能量的',
-    '完成多少是多少，妳已经很棒了'
+    '今天到这里吧，剩下的明天我陪妳',
+    '再熬夜，黑眼圈要把面包能量吃光了',
+    '完成多少算多少，妳已经很好了'
   ],
   midnight: [
     '这么晚还不睡呀，我陪妳一会儿就去休息哦',
     '凌晨的计划明天再做也来得及，先睡吧',
-    '嘘——月亮都困了，妳也休息吧'
+    '嘘——月亮打哈欠了，心爱也晚安'
   ],
   allDone: [
-    '全部完成！今天的妳闪闪发光',
+    '全部完成！今天的心爱闪闪发光',
     '计划清空，面包小人吃得圆滚滚',
-    '妳超棒的，明天也要一起加油',
-    '全部打卡成功，奖励自己一下吧',
-    '今天的努力，考试都会记得'
+    '妳超棒的，明天也要一起加油呀',
+    '全打卡成功！快去炫耀（适度）',
+    '今天的努力，考试那天会替妳说话'
   ],
   ongoing: [
     '正在陪妳「{task}」，专心哦',
-    '「{task}」进行中，我帮妳看着时间',
-    '现在是「{task}」时间，不许走神'
+    '「{task}」进行中，我帮妳盯着时间',
+    '现在是「{task}」时间，小脑袋不许飘走'
   ]
 }
 
@@ -102,6 +127,9 @@ function lightVibrate() {
   } catch (err) {}
 }
 
+// 无时间的计划项过了 17:00 还没勾，也进入蔫巴状态
+const WILT_MIN = 17 * 60
+
 // 给计划项附上勾选状态、进行状态和展示用时间文本；对同一输入幂等，可直接重复调用
 function decorate(items, checks, nowMin) {
   const timed = items.filter(i => i.startMin != null)
@@ -115,9 +143,12 @@ function decorate(items, checks, nowMin) {
       else if (nowMin >= end) status = 'past'
       else status = 'future'
     }
+    const done = !!checks[it.id]
     return Object.assign({}, it, {
-      done: !!checks[it.id],
+      done,
       status,
+      // 蔫巴：错过的定时项 + 傍晚还没勾的随性项，用「蔫了…」小牌子温柔提醒
+      wilted: !done && (status === 'past' || (it.startMin == null && nowMin >= WILT_MIN)),
       timeText: it.startMin != null
         ? (it.endMin != null ? `${fmtMin(it.startMin)} - ${fmtMin(it.endMin)}` : fmtMin(it.startMin))
         : ''
@@ -130,12 +161,21 @@ function findOngoing(list) {
   return cur ? cur.text : ''
 }
 
+const GREETINGS = {
+  night: ['夜深啦，心爱早点休息哦', '这么晚啦，梦里也要背书吗', '夜色温柔，别熬太久哦'],
+  morning: ['早上好呀，今天也闪闪发光', '心爱早！面包已经烤好啦', '早安，今天的计划在等妳'],
+  noon: ['中午好，吃饱饱再学习', '午安心爱，午休一下下嘛'],
+  afternoon: ['下午好，再坚持一下下', '下午的心爱也很棒', '下午茶时间到了没呀'],
+  evening: ['晚上好，收尾今天吧', '晚上好心爱，冲刺啦']
+}
+
 function makeGreeting(hour) {
-  if (hour < 6) return '夜深啦，早点休息哦'
-  if (hour < 11) return '早上好，今天也要加油哦'
-  if (hour < 14) return '中午好，记得好好吃饭'
-  if (hour < 18) return '下午好，再坚持一下下'
-  return '晚上好，收尾今天吧'
+  const pool = hour < 6 ? GREETINGS.night
+    : hour < 11 ? GREETINGS.morning
+    : hour < 14 ? GREETINGS.noon
+    : hour < 18 ? GREETINGS.afternoon
+    : GREETINGS.evening
+  return pool[Math.floor(Math.random() * pool.length)]
 }
 
 Page({
@@ -158,7 +198,9 @@ Page({
     pokeSeed: 0,
     bubbleText: '',
     bubbleShow: false,
-    bursts: []
+    bursts: [],
+    captureShow: false,
+    captureText: ''
   },
 
   timer: null,
@@ -167,6 +209,14 @@ Page({
   _burstSeq: 0,
   _burstFinals: {},
   _autoTimer: null,
+  _captureTimer: null,
+
+  onLoad() {
+    // 截屏彩蛋：模拟器和旧基础库上可能没有这个 API，注册失败也不影响页面
+    if (wx.onUserCaptureScreen) {
+      wx.onUserCaptureScreen(() => this.onCapture())
+    }
+  },
 
   onShow() {
     this.startTimer()
@@ -191,9 +241,14 @@ Page({
       clearTimeout(this._autoTimer)
       this._autoTimer = null
     }
+    if (this._captureTimer) {
+      clearTimeout(this._captureTimer)
+      this._captureTimer = null
+    }
     this.clearBursts()
     // 气泡只靠上面被清掉的定时器隐藏，必须手动复位，否则切走后气泡永久挂住
     if (this.data.bubbleShow) this.setData({ bubbleShow: false })
+    if (this.data.captureShow) this.setData({ captureShow: false })
   },
 
   clearBursts() {
@@ -335,15 +390,16 @@ Page({
     }
     if (allDone) {
       // 今天已撒过花时 celebrate 会被拦截，退回粒子爆花，别让这次勾选零反馈
-      if (!this.celebrate()) this.burstAt(`#check-${id}`)
+      if (!this.celebrate()) this.burstAt(`#check-${id}`, 1)
     } else if (willDone) {
-      // 勾上的瞬间在圆圈位置定点爆开一小撮粒子
-      this.burstAt(`#check-${id}`)
+      // 勾上的瞬间在圆圈位置定点爆开一小撮粒子，完成度越高爆得越欢
+      const progress = this.data.total ? doneCount / this.data.total : 1
+      this.burstAt(`#check-${id}`, progress)
     }
     this.loadStreak()
   },
 
-  burstAt(selector) {
+  burstAt(selector, strength) {
     wx.createSelectorQuery()
       .in(this)
       .select(selector)
@@ -353,18 +409,22 @@ Page({
         if (!r) return
         const cx = r.left + r.width / 2
         const cy = r.top + r.height / 2
+        // 强度 0~1：粒子数 10→20、飞散半径随之放大，勾到后面越炸越欢
+        const count = Math.round(10 + strength * 10)
+        const baseDist = 38 + strength * 28
+        const randDist = 38 + strength * 44
         // 每颗粒子带两份坐标：起点（圆心）和终点（沿随机角度散开）
         const particles = []
-        for (let i = 0; i < 12; i++) {
+        for (let i = 0; i < count; i++) {
           const ang = Math.random() * Math.PI * 2
-          const dist = 46 + Math.random() * 56
+          const dist = baseDist + Math.random() * randDist
           particles.push({
             sx: cx.toFixed(1),
             sy: cy.toFixed(1),
             tx: (cx + Math.cos(ang) * dist).toFixed(1),
             ty: (cy + Math.sin(ang) * dist).toFixed(1),
             color: BURST_COLORS[i % BURST_COLORS.length],
-            size: (6 + Math.random() * 9).toFixed(1),
+            size: (6 + Math.random() * (7 + strength * 5)).toFixed(1),
             round: Math.random() < 0.5
           })
         }
@@ -414,9 +474,14 @@ Page({
         size: 12 + Math.round(Math.random() * 14)
       })
     }
+    // 此时 data.streak 还是「截至今早」的连击数，今天的完成让它 +1
+    let praisePool = PRAISES
+    if (this.data.streak + 1 >= 2 && Math.random() < 0.5) {
+      praisePool = STREAK_PRAISES.map(s => s.split('{n}').join(this.data.streak + 1))
+    }
     this.setData({
       celebrating: true,
-      praise: PRAISES[Math.floor(Math.random() * PRAISES.length)],
+      praise: praisePool[Math.floor(Math.random() * praisePool.length)],
       confetti
     })
     return true
@@ -446,8 +511,12 @@ Page({
   },
 
   pickSceneQuote() {
-    const { allDone, ongoingText, doneCount, total } = this.data
+    const { allDone, ongoingText, doneCount, total, streak } = this.data
     const hour = new Date().getHours()
+    // 连击中时偶尔抢过话头夸连击，其余走时段/状态语录
+    if (!allDone && hour >= 6 && hour < 21 && streak >= 2 && Math.random() < 0.3) {
+      return STREAK_QUOTES[Math.floor(Math.random() * STREAK_QUOTES.length)].split('{n}').join(streak)
+    }
     let pool
     if (allDone) pool = SCENE_QUOTES.allDone
     else if (hour < 6) pool = SCENE_QUOTES.midnight
@@ -474,6 +543,25 @@ Page({
     })
     this._bubbleTimer = setTimeout(() => this.setData({ bubbleShow: false }), 2200)
     lightVibrate()
+  },
+
+  // 截屏被抓到：弹一张小卡片，2.6 秒自动收，也可点掉
+  onCapture() {
+    if (this.data.celebrating || this.data.captureShow) return
+    this.setData({
+      captureShow: true,
+      captureText: CAPTURE_QUOTES[Math.floor(Math.random() * CAPTURE_QUOTES.length)]
+    })
+    lightVibrate()
+    this._captureTimer = setTimeout(() => this.setData({ captureShow: false }), 2600)
+  },
+
+  closeCapture() {
+    if (this._captureTimer) {
+      clearTimeout(this._captureTimer)
+      this._captureTimer = null
+    }
+    this.setData({ captureShow: false })
   },
 
   goImport() {

@@ -1,5 +1,6 @@
 const { parseSchedule } = require('../../utils/parser')
-const { WEEKDAYS, weekdayOf, fmtMin } = require('../../utils/time')
+const { WEEKDAYS, weekdayOf, fmtMin, todayStr } = require('../../utils/time')
+const { serializeBackup, parseBackup, applyBackup } = require('../../utils/backup')
 
 function itemTimeText(it) {
   if (it.startMin == null) return ''
@@ -18,7 +19,8 @@ Page({
     sections: [],
     parsed: false,
     saving: false,
-    savedCount: 0
+    savedCount: 0,
+    backupText: ''
   },
 
   onInput(e) {
@@ -134,5 +136,67 @@ Page({
 
   goTemplate() {
     wx.switchTab({ url: '/pages/template/template' })
+  },
+
+  onBackupInput(e) {
+    this.setData({ backupText: e.detail.value })
+  },
+
+  exportBackup() {
+    try {
+      const info = wx.getStorageInfoSync()
+      const res = serializeBackup(k => wx.getStorageSync(k), info.keys, todayStr())
+      if (!res.count) {
+        wx.showToast({ title: '还没有可备份的数据', icon: 'none' })
+        return
+      }
+      wx.setClipboardData({
+        data: res.text,
+        success: () => wx.showModal({
+          title: '已复制备份',
+          content: `共 ${res.count} 条数据。打开手机备忘录粘贴保存好，恢复时复制它粘到下面就行`,
+          showCancel: false
+        })
+      })
+    } catch (err) {
+      console.error('导出备份失败', err)
+      wx.showToast({ title: '导出失败，请重试', icon: 'none' })
+    }
+  },
+
+  async restoreBackup() {
+    const raw = this.data.backupText.trim()
+    if (!raw) {
+      wx.showToast({ title: '先把备份文本粘贴进来哦', icon: 'none' })
+      return
+    }
+    const res = parseBackup(raw)
+    if (!res.ok) {
+      wx.showToast({ title: res.error, icon: 'none' })
+      return
+    }
+    const count = Object.keys(res.data).length
+    const ok = await new Promise(resolve =>
+      wx.showModal({
+        title: '恢复确认',
+        content: `备份里的 ${count} 条数据会覆盖当前对应的计划和记录，不在备份里的保持不变`,
+        confirmText: '恢复',
+        cancelText: '再想想',
+        success: r => resolve(r.confirm)
+      })
+    )
+    if (!ok) return
+    try {
+      // 覆盖前先把当前数据留底到非备份键，误恢复时还有救
+      const info = wx.getStorageInfoSync()
+      const snap = serializeBackup(k => wx.getStorageSync(k), info.keys, todayStr())
+      if (snap.count) wx.setStorageSync('prerestore_backup', snap.text)
+      const n = applyBackup((k, v) => wx.setStorageSync(k, v), res.data)
+      this.setData({ backupText: '' })
+      wx.showToast({ title: `已恢复 ${n} 条数据`, icon: 'success' })
+    } catch (err) {
+      console.error('恢复备份失败', err)
+      wx.showToast({ title: '恢复失败，请重试', icon: 'none' })
+    }
   }
 })

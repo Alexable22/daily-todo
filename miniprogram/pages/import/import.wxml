@@ -30,4 +30,14 @@
     <view class="done-title">全部都保存好啦</view>
     <button class="btn-ghost done-btn" bindtap="goTemplate">去看看每周计划</button>
   </view>
+
+  <view class="card backup-card">
+    <view class="backup-title">备份与恢复</view>
+    <view class="backup-sub">换手机或清缓存会丢记录，导出一份存到备忘录，随时能粘回来</view>
+    <button class="btn-primary backup-btn" bindtap="exportBackup">导出备份到剪贴板</button>
+    <textarea class="input-soft backup-input" auto-height maxlength="-1"
+              placeholder="恢复时，把备份文本粘贴到这里..." placeholder-class="ph" placeholder-style="color: #A58383"
+              value="{{backupText}}" bindinput="onBackupInput" />
+    <button class="btn-ghost backup-btn" bindtap="restoreBackup">从备份恢复</button>
+  </view>
 </view>

@@ -179,12 +179,45 @@
 .check.checked {
   background: linear-gradient(135deg, #FFB1B1, #FF8FA3);
   border-color: #FF8FA3;
+  animation: checkPop 0.32s ease-out;
 }
+@keyframes checkPop {
+  0% { transform: scale(0.8); }
+  55% { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+/* 描边生长对勾：两段小横条从交点依次“画”出来，模拟笔画 */
 .check-mark {
-  color: #FFFFFF;
-  font-size: 28rpx;
-  font-weight: 700;
-  line-height: 1;
+  position: relative;
+  width: 24rpx;
+  height: 18rpx;
+}
+.cm-arm {
+  position: absolute;
+  top: 11rpx;
+  height: 4rpx;
+  border-radius: 2rpx;
+  background: #FFFFFF;
+}
+.cm-a1 {
+  width: 10rpx;
+  left: 2rpx;
+  transform-origin: 100% 50%;
+  transform: rotate(-45deg) scaleX(0);
+  animation: drawA1 0.16s ease-out 0.05s forwards;
+}
+.cm-a2 {
+  width: 13rpx;
+  left: 12rpx;
+  transform-origin: 0 50%;
+  transform: rotate(-45deg) scaleX(0);
+  animation: drawA2 0.22s ease-out 0.18s forwards;
+}
+@keyframes drawA1 {
+  to { transform: rotate(-45deg) scaleX(1); }
+}
+@keyframes drawA2 {
+  to { transform: rotate(-45deg) scaleX(1); }
 }
 .task-body {
   flex: 1;
@@ -192,6 +225,7 @@
   min-width: 0;
 }
 .task-text {
+  position: relative;
   font-size: 30rpx;
   color: #6B4F4F;
   line-height: 1.45;
@@ -203,10 +237,25 @@
   color: #B08E8E;
 }
 
-/* 已完成 */
+/* 已完成：划线像被笔划掉一样横向长出来 */
 .task-card.done .task-text {
   color: #CDB6B6;
-  text-decoration: line-through;
+}
+.task-card.done .task-text::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 100%;
+  height: 3rpx;
+  background: #E3BEBE;
+  border-radius: 2rpx;
+  transform-origin: left center;
+  transform: scaleX(0);
+  animation: strikeDraw 0.32s ease-out 0.1s forwards;
+}
+@keyframes strikeDraw {
+  to { transform: scaleX(1); }
 }
 .task-card.done .task-time {
   color: #DCC9C9;
@@ -233,9 +282,33 @@
   background: #FF8FA3;
   color: #FFFFFF;
 }
-.tag-past {
-  background: #F3E9E7;
-  color: #B08E8E;
+/* 蔫巴小牌：歪着脑袋的暖黄色，可爱地提醒「该来了哦」 */
+.tag-wilt {
+  background: #FBF3E2;
+  color: #C9A16B;
+  transform: rotate(-6deg);
+}
+
+/* 截屏彩蛋小卡片 */
+.capture-tip {
+  position: fixed;
+  left: 50%;
+  bottom: 140rpx;
+  transform: translateX(-50%);
+  z-index: 90;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24rpx 44rpx;
+  background: #FFFBF8;
+  border-radius: 32rpx;
+  box-shadow: 0 12rpx 40rpx rgba(107, 79, 79, 0.22);
+  animation: bubbleIn 0.25s ease-out;
+}
+.capture-text {
+  margin-top: 10rpx;
+  font-size: 25rpx;
+  color: #6B4F4F;
 }
 
 /* 庆祝遮罩 */

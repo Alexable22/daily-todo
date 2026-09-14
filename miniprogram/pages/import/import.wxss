@@ -109,3 +109,27 @@
 .done-btn {
   margin-top: 28rpx;
 }
+
+/* 备份与恢复 */
+.backup-card {
+  margin-top: 24rpx;
+}
+.backup-title {
+  font-size: 32rpx;
+  font-weight: 600;
+}
+.backup-sub {
+  margin-top: 12rpx;
+  font-size: 23rpx;
+  color: #B08E8E;
+  line-height: 1.6;
+}
+.backup-btn {
+  margin-top: 24rpx;
+}
+.backup-input {
+  width: 100%;
+  min-height: 140rpx;
+  margin-top: 4rpx;
+  line-height: 1.6;
+}
