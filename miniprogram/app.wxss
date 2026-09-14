@@ -21,13 +21,15 @@ page {
 }
 
 .btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: linear-gradient(135deg, #FFB1B1, #FF8FA3);
   color: #FFFFFF;
   border-radius: 999rpx;
   font-size: 30rpx;
-  line-height: 88rpx;
+  line-height: 1;
   height: 88rpx;
-  text-align: center;
   border: none;
 }
 
@@ -36,13 +38,15 @@ page {
 }
 
 .btn-ghost {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: #FFFFFF;
   color: #FF8FA3;
   border-radius: 999rpx;
   font-size: 30rpx;
-  line-height: 84rpx;
+  line-height: 1;
   height: 88rpx;
-  text-align: center;
   border: 2rpx solid #FFD6DC;
 }
 
@@ -57,4 +61,8 @@ page {
   font-size: 28rpx;
   color: #6B4F4F;
   box-sizing: border-box;
+}
+/* input/textarea 的 placeholder-class：默认浅灰在奶油底上几乎看不见 */
+.ph {
+  color: #A58383;
 }

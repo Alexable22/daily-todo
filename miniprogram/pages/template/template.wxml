@@ -28,7 +28,7 @@
 
   <view class="card form-card">
     <view class="form-title">{{form.editingId ? '修改这一项' : '给' + weekdays[current - 1] + '添加计划'}}</view>
-    <input class="input-soft form-input" placeholder="要做什么？如：刷教综客观题" value="{{form.text}}" bindinput="onTextInput" />
+    <input class="input-soft form-input" placeholder="要做什么？如：刷教综客观题" placeholder-class="ph" value="{{form.text}}" bindinput="onTextInput" />
     <view class="time-row">
       <picker mode="time" value="{{form.startText}}" bindchange="onStartChange">
         <view class="time-pick {{form.startText ? '' : 'placeholder'}}">{{form.startText || '开始时间'}}</view>

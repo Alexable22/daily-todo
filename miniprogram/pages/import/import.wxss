@@ -70,7 +70,7 @@
   font-weight: 600;
 }
 .preview-time.no-time {
-  color: #D8C4C4;
+  color: #BFA3A3;
   font-weight: 400;
 }
 .preview-text {
@@ -87,7 +87,7 @@
   margin-left: 14rpx;
   border-radius: 50%;
   background: #F9F0ED;
-  color: #C9AFAF;
+  color: #A58383;
   text-align: center;
   line-height: 44rpx;
   font-size: 30rpx;

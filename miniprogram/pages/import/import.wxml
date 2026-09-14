@@ -3,7 +3,7 @@
     <view class="paste-title">把计划整段粘贴进来</view>
     <view class="paste-sub">支持「周一、周三」这样的星期标题，和「7.50-8.30 刷题」「14.00 起床」这样的时间写法；下午写成 6.40 会自动识别为 18:40</view>
     <textarea class="input-soft paste-input" auto-height maxlength="-1"
-              placeholder="粘贴备忘录里的计划..." value="{{rawText}}" bindinput="onInput" />
+              placeholder="粘贴备忘录里的计划..." placeholder-class="ph" value="{{rawText}}" bindinput="onInput" />
     <button class="btn-primary" bindtap="doParse">开始识别</button>
   </view>
 

@@ -85,7 +85,7 @@
   font-weight: 600;
 }
 .tpl-time.no-time {
-  color: #D8C4C4;
+  color: #BFA3A3;
   font-weight: 400;
 }
 .tpl-text {
@@ -129,7 +129,7 @@
   text-align: center;
 }
 .time-pick.placeholder {
-  color: #C9AFAF;
+  color: #A58383;
 }
 .time-sep {
   margin: 0 16rpx;
