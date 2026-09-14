@@ -17,17 +17,13 @@
         <text class="streak-num">{{streak}}</text>
         <text> 天</text>
       </view>
-      <view class="streak-guard" wx:if="{{streak > 0 && freezeProtected > 0}}">超人守护卡护住了连击</view>
+      <view class="streak-guard" wx:if="{{streak > 0 && freezeProtected > 0}}">面包超人守护卡护住了连击</view>
     </view>
-    <view class="mascot-zone {{springFlag ? 'spring' : ''}}"
-          style="transform: translate({{mascotDrag.dx}}px, {{mascotDrag.dy}}px) rotate({{mascotDrag.rot}}deg)"
+    <view class="mascot-zone"
           bindtap="onMascotTap" bindlongpress="onMascotLongpress"
-          bindtouchstart="onMascotTouchStart" bindtouchmove="onMascotTouchMove"
-          bindtouchend="onMascotTouchEnd" bindtouchcancel="onMascotTouchEnd">
-      <view class="mascot-wob {{wobClass}}">
-        <view class="mascot-live {{idleClass}}">
-          <anpanman size="{{150}}" src="/assets/mascot/cheer.png" animate="{{allDone}}" poke-seed="{{pokeSeed}}" />
-        </view>
+          bindtouchmove="onMascotTouchMove" bindtouchend="onMascotTouchEnd" bindtouchcancel="onMascotTouchEnd">
+      <view class="mascot-live {{idleClass}}">
+        <anpanman size="{{150}}" src="/assets/mascot/cheer.png" animate="{{allDone}}" poke-seed="{{pokeSeed}}" />
       </view>
       <view wx:if="{{bubbleShow}}" class="poke-bubble">{{bubbleText}}</view>
     </view>
@@ -98,12 +94,12 @@
           <anpanman size="{{68}}" />
           <view class="pc-perf"></view>
         </view>
-        <view class="pc-postmark">超人邮局</view>
+        <view class="pc-postmark">面包超人邮局</view>
       </view>
       <view class="pc-body">
         <view class="pc-to">亲爱的心爱：</view>
-        <view class="pc-text">昨天的计划全部完成，超人特地出一趟远门，给你寄来这张明信片。今天也要像昨天一样闪闪发光哦！</view>
-        <view class="pc-sign">—— 爱你的超人 · 于巡逻途中</view>
+        <view class="pc-text">昨天的计划全部完成，面包超人特地出一趟远门，给你寄来这张明信片。今天也要像昨天一样闪闪发光哦！</view>
+        <view class="pc-sign">—— 爱你的面包超人 · 于巡逻途中</view>
       </view>
       <view class="pc-foot">
         <anpanman size="{{150}}" src="/assets/mascot/wave.png" shape="card" />
@@ -155,7 +151,7 @@
       <view wx:if="{{milestoneN}}" class="milestone-badge">第 {{milestoneN}} 天 · 里程碑</view>
       <view class="praise">{{praise}}</view>
       <view class="praise-sub" wx:if="{{!milestoneN}}">今日计划全部完成，点任意处收下夸夸</view>
-      <view class="praise-sub" wx:else>连击 {{milestoneN}} 天达成！超人在天上放了一场专属烟花，为你庆祝这一路的坚持</view>
+      <view class="praise-sub" wx:else>连击 {{milestoneN}} 天达成！面包超人在天上放了一场专属烟花，为你庆祝这一路的坚持</view>
     </view>
   </view>
 </view>

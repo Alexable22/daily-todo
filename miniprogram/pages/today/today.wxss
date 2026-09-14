@@ -78,16 +78,11 @@
   position: relative;
   flex-shrink: 0;
 }
-/* 不倒翁弹回：只有松手归位时挂 spring，拖拽过程不带过渡才跟手 */
-.mascot-zone.spring {
-  transition: transform 0.62s cubic-bezier(0.22, 1.45, 0.36, 1);
-}
-.mascot-wob,
 .mascot-live {
   width: 100%;
   height: 100%;
 }
-/* 超人活起来：常驻呼吸 */
+/* 面包超人活起来：常驻呼吸 */
 .mascot-live {
   transform-origin: 50% 88%;
   animation: breathe 3.4s ease-in-out infinite;
@@ -95,18 +90,6 @@
 @keyframes breathe {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.035); }
-}
-.mascot-wob.wobbling {
-  transform-origin: 50% 90%;
-  animation: wob 0.85s ease-out;
-}
-@keyframes wob {
-  0% { transform: rotate(0deg); }
-  22% { transform: rotate(9deg); }
-  45% { transform: rotate(-7deg); }
-  68% { transform: rotate(4deg); }
-  85% { transform: rotate(-2deg); }
-  100% { transform: rotate(0deg); }
 }
 /* 待机小动作：歪头 / 蹦一下 / 摇摆 / 转圈 */
 .mascot-live.act-tilt {

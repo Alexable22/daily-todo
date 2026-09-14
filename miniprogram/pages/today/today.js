@@ -4,23 +4,24 @@ const PRAISES = [
   '全部完成！心爱今天也是满分小超人',
   '计划清空！你努力的样子在发光呀',
   '打卡全成功，奖励自己一块小蛋糕吧',
-  '今天的心爱，比超人的披风还要闪',
+  '今天的心爱，比面包超人的披风还要闪',
   '全部搞定！你就是教招卷王本王',
-  '完美好收工，明天也要来找我哦'
+  '完美好收工，明天面包超人还在老地方等你',
+  '起飞咯！心爱是今天最闪的正义伙伴'
 ]
 
 // 连击达到 2 天以上时，庆祝语有概率换成带天数的版本
 const STREAK_PRAISES = [
   '连续 {n} 天全完成！心爱是坚持小天才',
-  '{n} 天连击！超人激动得原地转圈圈',
+  '{n} 天连击！面包超人激动得原地转圈圈',
   '连赢 {n} 天，这个战绩值得截图炫耀'
 ]
 
 const STREAK_QUOTES = [
   '已经连着 {n} 天全完成啦，心爱好厉害',
-  '{n} 天连击中，超人给你颁了一枚小星星',
+  '{n} 天连击中，面包超人给你颁了一枚小星星',
   '连续 {n} 天！再坚持一下就是传说啦',
-  '偷偷数了数，你已经连赢 {n} 天了哦'
+  '偷偷数了数，心爱已经连赢 {n} 天了哦'
 ]
 
 // 截屏被抓包时的台词
@@ -28,23 +29,26 @@ const CAPTURE_QUOTES = [
   '咔嚓！心爱认真的样子被存下来啦',
   '被拍到咯，比个耶',
   '这一刻的努力，截图为证！',
-  '偷拍成功，原来是心爱在学习'
+  '偷拍成功，原来是心爱在发光',
+  '正义的瞬间，就该留影纪念'
 ]
 
 // 暴击横幅：勾选时 12% 概率触发，夸的正是「这一下手感」
 const CRIT_QUOTES = [
   '会心一击！这一勾又快又准',
-  '暴击！超人在旁边看呆了',
+  '暴击！面包超人在旁边看呆了',
   '乖巧攻击，直接命中！',
   '这一勾的手感，绝了',
-  '任务血条见底，倒下！'
+  '任务血条见底，倒下！',
+  '爱与勇气，全部灌注在这一勾里！'
 ]
 
 // 双击吉祥物比心的台词
 const HEART_QUOTES = [
-  '比心！超人也爱你哦',
+  '比心！面包超人也爱你哦',
   '心心收到，能量充满！',
-  '双向奔赴，巡逻都更有劲了'
+  '双向奔赴，巡逻都更有劲了',
+  '心爱比的心，面包超人要用双手接住'
 ]
 
 // 长按搓搓吉祥物的台词
@@ -52,7 +56,8 @@ const RUB_QUOTES = [
   '脸都被搓红啦…元气分你一半',
   '搓搓头？好啦好啦，借你好运',
   '再搓要冒火星啦，嗖——',
-  '搓搓更精神，冲鸭'
+  '搓搓更精神，冲鸭',
+  '被心爱搓过的脸，今天特别有精神'
 ]
 
 // 双击任务行拍一拍的台词
@@ -67,8 +72,9 @@ const PAT_QUOTES = [
 // 深夜晚安卡副文案（主标题固定「23 点啦，该休息咯」）
 const NIGHT_LINES = [
   '今天的心爱已经很努力了，睡饱才记得牢',
-  '剩下的明天再做，超人帮你记着呢',
-  '好梦是明天的第一步，先睡为敬'
+  '剩下的明天再做，面包超人帮你记着呢',
+  '好梦是明天的第一步，先睡为敬',
+  '晚安心爱，爱和勇气在梦里也陪着你'
 ]
 
 const CONFETTI_COLORS = ['#FF8FA3', '#FFC9A9', '#FFD6DC', '#B5E0C8', '#A9C9FF', '#FFE08A']
@@ -77,34 +83,39 @@ const BURST_COLORS = ['#FF8FA3', '#FFB3C1', '#FFC9D4', '#FCD9A0', '#FFE9C4']
 
 const POKE_QUOTES = [
   '戳我干嘛，快去写题啦小懒虫',
-  '再戳再戳，超人的披风要被戳出洞啦',
+  '再戳再戳，面包超人的披风要被戳出洞啦',
   '我在呢，陪心爱一起熬教综',
-  '偷偷说：你比我可爱一点点',
+  '偷偷说：心爱比我可爱一点点',
   '刷题累了？来，抱一下再走',
-  '今天的你，也是元气满满的小太阳',
+  '今天的心爱，也是元气满满的小太阳',
   '别看我啦，看你的计划表去',
-  '超人力量注入中……好啦，冲！',
-  '你认真的侧脸，是超人巡逻路上最好的风景',
+  '面包超人能量注入中……好啦，冲！',
+  '心爱认真的侧脸，是面包超人巡逻路上最好的风景',
   '摸鱼被我抓到啦，嘿嘿不说出去',
-  '慢慢来，超人也是一步一步飞起来的',
-  '错题本想你了，快去看看它'
+  '慢慢来，面包超人也是一步一步飞起来的',
+  '错题本想你了，快去看看它',
+  '起飞咯！心爱今天也是无敌模式',
+  '爱和勇气是你最好最好的朋友——还有我',
+  '心爱遇到难题的话，披风借你披一下'
 ]
 
 // 面包超人的一天：按 时段 × 完成状态 分桶的场景语录，{task} 会替换成进行中的任务名
 const SCENE_QUOTES = {
   dawn: [
-    '早安心爱！超人已就位，新的一天冲鸭',
+    '早安心爱！面包超人已就位，新的一天冲鸭',
     '起床啦，太阳晒小屁股咯',
     '早上脑子最清醒，先把最难的那块啃掉',
     '不吃早餐就背书，肚子会咕咕抗议的',
-    '清晨第一缕元气，分你一大半'
+    '清晨第一缕元气，分你一大半',
+    '带上爱和勇气，出发！'
   ],
   forenoon: [
     '上午阳光正好，适合和刷题贴贴',
-    '一项一项来，我在旁边帮你数着呢',
+    '一项一项来，面包超人在旁边帮你数着呢',
     '学累了？喝水，抬头，看窗外三秒钟',
-    '专注的心爱，连超人路过都要夸一句',
-    '上午进度过半了吗？过半奖励奶茶（自己买）'
+    '专注的心爱，连面包超人路过都要夸一句',
+    '上午进度过半了吗？过半奖励奶茶（自己买）',
+    '正义的上午，就该用来对付教综'
   ],
   noon: [
     '中午好，饭要吃饱，书才背得动',
@@ -116,20 +127,20 @@ const SCENE_QUOTES = {
     '下午最容易犯困，站起来晃两圈',
     '犯困的话，捏捏自己的小脸醒一醒',
     '错题本是你的好朋友，常回来看看它',
-    '偷偷给你充了一格超人能量，继续冲',
+    '偷偷给心爱充了一格面包超人能量，继续冲',
     '还有几项没勾？它们在排队等你宠幸呢'
   ],
   dusk: [
     '傍晚啦，回头看看今天的战果',
     '晚饭吃热乎的，胃暖了心才暖',
     '今天的尾巴了，漂亮收官吧',
-    '晚霞是草莓味的，和你很配'
+    '晚霞是草莓味的，和心爱很配'
   ],
   night: [
     '夜深了，做不完就明天再说，我不怪你',
     '今天到这里吧，剩下的明天我陪你',
-    '再熬夜，黑眼圈要把元气吃光光啦',
-    '完成多少算多少，你已经很好了'
+    '再熬夜，黑眼圈要把心爱的元气吃光光啦',
+    '完成多少算多少，心爱已经很好了'
   ],
   midnight: [
     '这么晚还不睡呀，我陪你一会儿就去休息哦',
@@ -138,14 +149,15 @@ const SCENE_QUOTES = {
   ],
   allDone: [
     '全部完成！今天的心爱闪闪发光',
-    '计划清空，超人开心得原地起飞',
-    '你超棒的，明天也要一起加油呀',
+    '计划清空，面包超人开心得原地起飞',
+    '心爱超棒的，明天也要一起加油呀',
     '全打卡成功！快去炫耀（适度）',
-    '今天的努力，考试那天会替你说话'
+    '今天的努力，考试那天会替你说话',
+    '连面包超人都要给心爱让出 C 位'
   ],
   ongoing: [
-    '正在陪你「{task}」，专心哦',
-    '「{task}」进行中，我帮你盯着时间',
+    '正在陪心爱「{task}」，专心哦',
+    '「{task}」进行中，面包超人帮你盯着时间',
     '现在是「{task}」时间，小脑袋不许飘走'
   ]
 }
@@ -203,7 +215,7 @@ function findOngoing(list) {
 
 const GREETINGS = {
   night: ['夜深啦，心爱早点休息哦', '这么晚啦，梦里也要背书吗', '夜色温柔，别熬太久哦'],
-  morning: ['早上好呀，今天也闪闪发光', '心爱早！超人今天也准时上岗', '早安，今天的计划在等你'],
+  morning: ['早上好呀，心爱今天也闪闪发光', '心爱早！面包超人今天也准时上岗', '早安，今天的计划在等你'],
   noon: ['中午好，吃饱饱再学习', '午安心爱，午休一下下嘛'],
   afternoon: ['下午好，再坚持一下下', '下午的心爱也很棒', '下午茶时间到了没呀'],
   evening: ['晚上好，收尾今天吧', '晚上好心爱，冲刺啦']
@@ -251,12 +263,8 @@ Page({
     // 暴击横幅
     critShow: false,
     critText: '',
-    // 超人活起来：呼吸 + 随机小动作
+    // 面包超人活起来：呼吸 + 随机小动作
     idleClass: '',
-    // 不倒翁：拖拽偏移与回弹
-    mascotDrag: { dx: 0, dy: 0, rot: 0 },
-    springFlag: false,
-    wobClass: '',
     // 傍晚后的星星 & 深晚安卡 & 隔夜明信片 & 里程碑
     eveningStars: false,
     nightShow: false,
@@ -285,17 +293,12 @@ Page({
   _petting: false,
   _petMoved: false,
   _petTick: 0,
-  _dragStart: null,
-  _dragActive: false,
-  _dragged: false,
   _idleTimer: null,
   _idleClear: null,
   _critTimer: null,
   _patTimer: null,
   _cardTimer: null,
   _heartStagers: [],
-  _springTimer: null,
-  _draggedTimer: null,
   _postcardDate: '',
   _pendingFreezeNotice: '',
   _pendingFreezeDate: '',
@@ -375,22 +378,12 @@ Page({
       this._heartStagers.forEach(clearTimeout)
       this._heartStagers = []
     }
-    if (this._springTimer) {
-      clearTimeout(this._springTimer)
-      this._springTimer = null
-    }
-    if (this._draggedTimer) {
-      clearTimeout(this._draggedTimer)
-      this._draggedTimer = null
-    }
     this.clearBursts()
     this.clearHearts()
     this._petting = false
     this._petMoved = false
-    this._dragStart = null
-    this._dragActive = false
     // 气泡只靠上面被清掉的定时器隐藏，必须手动复位，否则切走后气泡永久挂住
-    const patch = { bubbleShow: false, captureShow: false, patTag: null, patClass: '', pattedId: '', critShow: false, idleClass: '', wobClass: '', nightShow: false, postcardShow: false, springFlag: false, mascotDrag: { dx: 0, dy: 0, rot: 0 } }
+    const patch = { bubbleShow: false, captureShow: false, patTag: null, patClass: '', pattedId: '', critShow: false, idleClass: '', nightShow: false, postcardShow: false }
     this.setData(patch)
   },
 
@@ -507,7 +500,7 @@ Page({
       const cursor = new Date()
       // 今天还没全部完成时，连续天数从昨天往回算
       if (!doneDates.has(todayStr(cursor))) cursor.setDate(cursor.getDate() - 1)
-      // 超人守护卡：回扫遇到「单日空窗」且该月卡片可用时，自动护住连击。
+      // 面包超人守护卡：回扫遇到「单日空窗」且该月卡片可用时，自动护住连击。
       // used 记录「月份 -> 被护住的日期」：同一个月只能护一次，重扫时读到同一条记录视为已护过，结果幂等。
       const used = wx.getStorageSync('freeze_used') || {}
       let streak = 0
@@ -549,7 +542,7 @@ Page({
       const unannounced = protectedDates.find(dd => notified.indexOf(dd) < 0)
       if (unannounced) {
         this._pendingFreezeDate = unannounced
-        this._pendingFreezeNotice = `叮！超人的守护卡护住了 ${Number(unannounced.slice(8))} 号那天的连击，这个月的卡用掉啦`
+        this._pendingFreezeNotice = `叮！面包超人的守护卡护住了 ${Number(unannounced.slice(8))} 号那天的连击，这个月的卡用掉啦`
       }
       this.setData({ streak, freezeProtected: protectedCount })
     } catch (err) {
@@ -860,7 +853,6 @@ Page({
 
   // 吉祥物手势分发：单击延迟 260ms 出台词，260ms 内第二击是比心（窗口与提交延时同值，不留死区）
   onMascotTap() {
-    if (this._dragged) return
     const now = Date.now()
     if (now - this._mascotTapAt < 260) {
       if (this._mascotTapTimer) {
@@ -938,79 +930,33 @@ Page({
     lightVibrate()
   },
 
-  onMascotTouchStart(e) {
-    const t = e.touches && e.touches[0]
-    if (!t) return
-    // 弹回动画还没走完就再次抓起：立刻摘掉弹簧过渡，拖拽才能跟手
-    if (this.data.springFlag) {
-      if (this._springTimer) {
-        clearTimeout(this._springTimer)
-        this._springTimer = null
-      }
-      this.setData({ springFlag: false, wobClass: '' })
-    }
-    this._dragStart = { x: t.clientX, y: t.clientY }
-    this._dragActive = false
-  },
-
+  // 搓搓模式：手指在吉祥物上蹭，蹭到哪儿爱心冒到哪儿
   onMascotTouchMove(e) {
     const t = e.touches && e.touches[0]
-    if (!t) return
-    if (this._petting) {
-      this._petMoved = true
-      const now = Date.now()
-      if (now - this._petTick > 140) {
-        this._petTick = now
-        this.spawnHeart(t.clientX, t.clientY - 12)
-        if (Math.random() < 0.35) lightVibrate()
-      }
-      return
+    if (!t || !this._petting) return
+    this._petMoved = true
+    const now = Date.now()
+    if (now - this._petTick > 140) {
+      this._petTick = now
+      this.spawnHeart(t.clientX, t.clientY - 12)
+      if (Math.random() < 0.35) lightVibrate()
     }
-    if (!this._dragStart) return
-    const dx = t.clientX - this._dragStart.x
-    const dy = t.clientY - this._dragStart.y
-    if (!this._dragActive && Math.abs(dx) + Math.abs(dy) > 8) this._dragActive = true
-    if (!this._dragActive) return
-    // 不倒翁：可以被拖走，但拖不远，松手弹回
-    const clamp = v => Math.max(-170, Math.min(170, v))
-    this.setData({
-      mascotDrag: {
-        dx: clamp(dx),
-        dy: clamp(dy),
-        rot: Math.max(-14, Math.min(14, dx * 0.08))
-      }
-    })
   },
 
-  // touchend / touchcancel 共用：搓搓收尾后继续走拖拽清理，
-  // 否则「先拖动 8px 再按住超过 350ms」这类混合手势会让超人卡在偏移位置
+  // touchend / touchcancel 共用：搓搓收尾，说一句收场台词
   onMascotTouchEnd() {
     const wasPetting = this._petting
     this._petting = false
     if (wasPetting && this._petMoved) this.showBubble(RUB_QUOTES[Math.floor(Math.random() * RUB_QUOTES.length)], 2200)
     this._petMoved = false
-    if (this._dragActive) {
-      this._dragActive = false
-      this._dragged = true
-      if (this._draggedTimer) clearTimeout(this._draggedTimer)
-      this._draggedTimer = setTimeout(() => { this._dragged = false }, 400)
-      // 弹回：挂上弹簧过渡 + 归零偏移，再补一段左右摇摆收尾
-      this.setData({ mascotDrag: { dx: 0, dy: 0, rot: 0 }, springFlag: true, wobClass: '' }, () => {
-        this.setData({ wobClass: 'wobbling' })
-      })
-      if (this._springTimer) clearTimeout(this._springTimer)
-      this._springTimer = setTimeout(() => this.setData({ springFlag: false }), 700)
-      lightVibrate()
-    }
-    this._dragStart = null
   },
 
-  // 超人活起来：待机时呼吸（WXSS 常驻），每 12~21 秒随机来一个小动作
+  // 面包超人活起来：待机时呼吸（WXSS 常驻），每 12~21 秒随机来一个小动作
   startIdle() {
     this.stopIdle()
     const loop = () => {
       this._idleTimer = setTimeout(() => {
-        if (!this._petting && !this._dragActive && !this.data.celebrating && this.data.idleClass === '') {
+        if (!this._petting && !this.data.celebrating && this.data.idleClass === '') {
           const r = Math.random()
           let act = 'tilt'
           if (r < 0.3) act = 'hop'
