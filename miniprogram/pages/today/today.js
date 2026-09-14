@@ -31,6 +31,46 @@ const CAPTURE_QUOTES = [
   '偷拍成功，原来是心爱在学习'
 ]
 
+// 暴击横幅：勾选时 12% 概率触发，夸的正是「这一下手感」
+const CRIT_QUOTES = [
+  '会心一击！这一勾又快又准',
+  '暴击！超人在旁边看呆了',
+  '乖巧攻击，直接命中！',
+  '这一勾的手感，绝了',
+  '任务血条见底，倒下！'
+]
+
+// 双击吉祥物比心的台词
+const HEART_QUOTES = [
+  '比心！超人也爱你哦',
+  '心心收到，能量充满！',
+  '双向奔赴，巡逻都更有劲了'
+]
+
+// 长按搓搓吉祥物的台词
+const RUB_QUOTES = [
+  '脸都被搓红啦…元气分你一半',
+  '搓搓头？好啦好啦，借你好运',
+  '再搓要冒火星啦，嗖——',
+  '搓搓更精神，冲鸭'
+]
+
+// 双击任务行拍一拍的台词
+const PAT_QUOTES = [
+  '任务被拍醒了，火速开动',
+  '别拍啦别拍啦，我马上做',
+  '拍拍生效，任务精神 +1',
+  '被拍过的任务跑得更快哦',
+  '任务原地立正：这就开始！'
+]
+
+// 深夜晚安卡副文案（主标题固定「23 点啦，该休息咯」）
+const NIGHT_LINES = [
+  '今天的心爱已经很努力了，睡饱才记得牢',
+  '剩下的明天再做，超人帮你记着呢',
+  '好梦是明天的第一步，先睡为敬'
+]
+
 const CONFETTI_COLORS = ['#FF8FA3', '#FFC9A9', '#FFD6DC', '#B5E0C8', '#A9C9FF', '#FFE08A']
 
 const BURST_COLORS = ['#FF8FA3', '#FFB3C1', '#FFC9D4', '#FCD9A0', '#FFE9C4']
@@ -184,6 +224,7 @@ Page({
     weekdayText: '',
     greeting: '',
     streak: 0,
+    freezeProtected: 0,
     hasTemplate: false,
     items: [],
     checks: {},
@@ -200,7 +241,31 @@ Page({
     bubbleShow: false,
     bursts: [],
     captureShow: false,
-    captureText: ''
+    captureText: '',
+    // 双击吉祥物比心 / 长按搓搓冒出的小爱心（视口坐标，两段式动画）
+    hearts: [],
+    // 拍一拍任务行：飘出的小字标签
+    patTag: null,
+    patClass: '',
+    pattedId: '',
+    // 暴击横幅
+    critShow: false,
+    critText: '',
+    // 超人活起来：呼吸 + 随机小动作
+    idleClass: '',
+    // 不倒翁：拖拽偏移与回弹
+    mascotDrag: { dx: 0, dy: 0, rot: 0 },
+    springFlag: false,
+    wobClass: '',
+    // 傍晚后的星星 & 深晚安卡 & 隔夜明信片 & 里程碑
+    eveningStars: false,
+    nightShow: false,
+    nightLine: '',
+    postcardShow: false,
+    postcardDateText: '',
+    postcardCount: 0,
+    milestoneN: 0,
+    fireworks: []
   },
 
   timer: null,
@@ -210,6 +275,30 @@ Page({
   _burstFinals: {},
   _autoTimer: null,
   _captureTimer: null,
+  _heartSeq: 0,
+  _heartFinals: {},
+  _taskTapId: '',
+  _taskTapAt: 0,
+  _tapTimer: null,
+  _mascotTapAt: 0,
+  _mascotTapTimer: null,
+  _petting: false,
+  _petMoved: false,
+  _petTick: 0,
+  _dragStart: null,
+  _dragActive: false,
+  _dragged: false,
+  _idleTimer: null,
+  _idleClear: null,
+  _critTimer: null,
+  _patTimer: null,
+  _cardTimer: null,
+  _heartStagers: [],
+  _springTimer: null,
+  _draggedTimer: null,
+  _postcardDate: '',
+  _pendingFreezeNotice: '',
+  _pendingFreezeDate: '',
 
   onLoad() {
     // 截屏彩蛋：模拟器和旧基础库上可能没有这个 API，注册失败也不影响页面
@@ -220,7 +309,11 @@ Page({
 
   onShow() {
     this.startTimer()
-    this.refresh().then(() => this.maybeAutoBubble())
+    this.startIdle()
+    this.refresh().then(() => {
+      this.maybeCards()
+      this.maybeAutoBubble()
+    })
   },
 
   onHide() {
@@ -246,16 +339,71 @@ Page({
       clearTimeout(this._captureTimer)
       this._captureTimer = null
     }
+    if (this._tapTimer) {
+      clearTimeout(this._tapTimer)
+      this._tapTimer = null
+      // 手势识别窗内切走页面时，把已经落下的单击兑现掉，别让这记勾选凭空消失
+      if (this._taskTapId) this.doToggle(this._taskTapId)
+    }
+    this._taskTapId = ''
+    this._taskTapAt = 0
+    if (this._mascotTapTimer) {
+      clearTimeout(this._mascotTapTimer)
+      this._mascotTapTimer = null
+    }
+    if (this._idleTimer) {
+      clearTimeout(this._idleTimer)
+      this._idleTimer = null
+    }
+    if (this._idleClear) {
+      clearTimeout(this._idleClear)
+      this._idleClear = null
+    }
+    if (this._critTimer) {
+      clearTimeout(this._critTimer)
+      this._critTimer = null
+    }
+    if (this._patTimer) {
+      clearTimeout(this._patTimer)
+      this._patTimer = null
+    }
+    if (this._cardTimer) {
+      clearTimeout(this._cardTimer)
+      this._cardTimer = null
+    }
+    if (this._heartStagers.length) {
+      this._heartStagers.forEach(clearTimeout)
+      this._heartStagers = []
+    }
+    if (this._springTimer) {
+      clearTimeout(this._springTimer)
+      this._springTimer = null
+    }
+    if (this._draggedTimer) {
+      clearTimeout(this._draggedTimer)
+      this._draggedTimer = null
+    }
     this.clearBursts()
+    this.clearHearts()
+    this._petting = false
+    this._petMoved = false
+    this._dragStart = null
+    this._dragActive = false
     // 气泡只靠上面被清掉的定时器隐藏，必须手动复位，否则切走后气泡永久挂住
-    if (this.data.bubbleShow) this.setData({ bubbleShow: false })
-    if (this.data.captureShow) this.setData({ captureShow: false })
+    const patch = { bubbleShow: false, captureShow: false, patTag: null, patClass: '', pattedId: '', critShow: false, idleClass: '', wobClass: '', nightShow: false, postcardShow: false, springFlag: false, mascotDrag: { dx: 0, dy: 0, rot: 0 } }
+    this.setData(patch)
   },
 
   clearBursts() {
     Object.keys(this._burstFinals).forEach(k => clearTimeout(this._burstFinals[k]))
     this._burstFinals = {}
     if (this.data.bursts.length) this.setData({ bursts: [] })
+  },
+
+  clearHearts() {
+    Object.keys(this._heartFinals).forEach(k => clearTimeout(this._heartFinals[k]))
+    this._heartFinals = {}
+    if (this.data.hearts.length) this.setData({ hearts: [] })
   },
 
   onPageScroll() {
@@ -280,6 +428,9 @@ Page({
   },
 
   tickStatus() {
+    // 页面开着跨过 18 点 / 23 点时，星星和晚安卡也要跟上
+    this.setData({ eveningStars: new Date().getHours() >= 18 })
+    this.maybeNightCard()
     if (!this.data.items.length) return
     this.applyView(this.data.items, this.data.checks)
   },
@@ -356,20 +507,89 @@ Page({
       const cursor = new Date()
       // 今天还没全部完成时，连续天数从昨天往回算
       if (!doneDates.has(todayStr(cursor))) cursor.setDate(cursor.getDate() - 1)
+      // 超人守护卡：回扫遇到「单日空窗」且该月卡片可用时，自动护住连击。
+      // used 记录「月份 -> 被护住的日期」：同一个月只能护一次，重扫时读到同一条记录视为已护过，结果幂等。
+      const used = wx.getStorageSync('freeze_used') || {}
       let streak = 0
-      while (doneDates.has(todayStr(cursor))) {
-        streak++
+      let protectedCount = 0
+      let newProtected = ''
+      const protectedDates = []
+      let justProtected = false
+      while (true) {
+        const d = todayStr(cursor)
+        if (doneDates.has(d)) {
+          streak++
+          justProtected = false
+        } else {
+          const month = d.slice(0, 7)
+          const wasProtected = used[month] === d
+          // 护卡只桥接「单日失手」：近端要有连击在延续（streak>=1），远端前一天也必须本来就完成，
+          // 否则卡片会空烧——比如首次打卡、或隔了整个周末，那不是单日失手
+          const prev = new Date(cursor)
+          prev.setDate(prev.getDate() - 1)
+          const bridgesChain = doneDates.has(todayStr(prev))
+          if (wasProtected || (streak >= 1 && bridgesChain && !used[month] && !justProtected)) {
+            if (!wasProtected) {
+              used[month] = d
+              newProtected = d
+            }
+            protectedDates.push(d)
+            protectedCount++
+            streak++
+            justProtected = true
+          } else {
+            break
+          }
+        }
         cursor.setDate(cursor.getDate() - 1)
       }
-      this.setData({ streak })
+      if (newProtected) wx.setStorageSync('freeze_used', used)
+      // 播报要等真正冒出气泡那一刻才记进 freeze_notified；没播出去的，下次扫描还会重新排队，不会永久丢
+      const notified = wx.getStorageSync('freeze_notified') || []
+      const unannounced = protectedDates.find(dd => notified.indexOf(dd) < 0)
+      if (unannounced) {
+        this._pendingFreezeDate = unannounced
+        this._pendingFreezeNotice = `叮！超人的守护卡护住了 ${Number(unannounced.slice(8))} 号那天的连击，这个月的卡用掉啦`
+      }
+      this.setData({ streak, freezeProtected: protectedCount })
     } catch (err) {
       console.error('加载连续打卡失败', err)
     }
   },
 
+  // 任务行手势分发：单击等 260ms 再勾选，260ms 内同一行来了第二下就是「拍一拍」；
+  // 期间点了别的行，说明是在快速连勾，把上一行立刻兑现，别吞掉它的勾选。
+  // 提交延时与识别窗口必须同值：窗口内第二击永远来得及先取消定时器
   toggle(e) {
-    if (!this.recordKey || !this.recordReady) return
     const id = e.currentTarget.dataset.id
+    const now = Date.now()
+    if (this._taskTapId === id && now - this._taskTapAt < 260) {
+      if (this._tapTimer) {
+        clearTimeout(this._tapTimer)
+        this._tapTimer = null
+      }
+      this._taskTapId = ''
+      this._taskTapAt = 0
+      this.patTask(id)
+      return
+    }
+    if (this._tapTimer) {
+      clearTimeout(this._tapTimer)
+      this._tapTimer = null
+      if (this._taskTapId) this.doToggle(this._taskTapId)
+    }
+    this._taskTapId = id
+    this._taskTapAt = now
+    this._tapTimer = setTimeout(() => {
+      this._tapTimer = null
+      this._taskTapId = ''
+      this._taskTapAt = 0
+      this.doToggle(id)
+    }, 260)
+  },
+
+  doToggle(id) {
+    if (!this.recordKey || !this.recordReady) return
     const willDone = !this.data.checks[id]
     const checks = Object.assign({}, this.data.checks, { [id]: willDone })
     this.setData({ checks })
@@ -390,14 +610,63 @@ Page({
       wx.showToast({ title: '保存失败，请重试', icon: 'none' })
     }
     if (allDone) {
+      // 先重算连击再庆祝：守护卡可能刚把今天的完成桥进连击里，celebrate 要拿到含今天的最新天数
+      this.loadStreak()
       // 今天已撒过花时 celebrate 会被拦截，退回粒子爆花，别让这次勾选零反馈
       if (!this.celebrate()) this.burstAt(`#check-${id}`, 1)
     } else if (willDone) {
-      // 勾上的瞬间在圆圈位置定点爆开一小撮粒子，完成度越高爆得越欢
+      // 勾上的瞬间在圆圈位置定点爆开一小撮粒子，完成度越高爆得越欢；12% 概率暴击加料
       const progress = this.data.total ? doneCount / this.data.total : 1
-      this.burstAt(`#check-${id}`, progress)
+      let strength = progress
+      if (Math.random() < 0.12) {
+        this.showCrit()
+        strength = Math.min(1.6, strength + 0.6)
+      }
+      this.burstAt(`#check-${id}`, strength)
+      this.loadStreak()
     }
-    this.loadStreak()
+  },
+
+  // 拍一拍：任务行抖一下，头顶飘出一句俏皮话
+  patTask(id) {
+    lightVibrate()
+    this.setData({ pattedId: '', patClass: '', patTag: null }, () => {
+      this.setData({ pattedId: id, patClass: 'patted' })
+      wx.createSelectorQuery()
+        .in(this)
+        .select(`#check-${id}`)
+        .boundingClientRect()
+        .exec(res => {
+          const r = res && res[0]
+          // 页面在查询返回前被切走时 _patTimer 已被清空，别再挂出没人收尾的幽灵标签
+          if (!r || !this._patTimer) return
+          this.setData({
+            patTag: {
+              x: Math.round(r.left + r.width / 2),
+              y: Math.round(r.top - 8),
+              text: PAT_QUOTES[Math.floor(Math.random() * PAT_QUOTES.length)]
+            }
+          })
+        })
+      if (this._patTimer) clearTimeout(this._patTimer)
+      this._patTimer = setTimeout(() => {
+        this._patTimer = null
+        this.setData({ pattedId: '', patClass: '', patTag: null })
+      }, 1100)
+    })
+  },
+
+  showCrit() {
+    if (this.data.critShow) return
+    let idx = Math.floor(Math.random() * CRIT_QUOTES.length)
+    if (CRIT_QUOTES.length > 1 && idx === this._lastCritIdx) idx = (idx + 1) % CRIT_QUOTES.length
+    this._lastCritIdx = idx
+    this.setData({ critShow: true, critText: CRIT_QUOTES[idx] })
+    if (this._critTimer) clearTimeout(this._critTimer)
+    this._critTimer = setTimeout(() => {
+      this._critTimer = null
+      this.setData({ critShow: false })
+    }, 1600)
   },
 
   burstAt(selector, strength) {
@@ -475,35 +744,76 @@ Page({
         size: 12 + Math.round(Math.random() * 14)
       })
     }
-    // 此时 data.streak 还是「截至今早」的连击数，今天的完成让它 +1
+    // data.streak 由刚跑过的 loadStreak 刷新，今天的全完成已计入（含守护卡桥接）
+    const n = this.data.streak
+    let milestone = 0
+    if (n === 7 || n === 30 || n === 100) {
+      const mk = `celebrated_m${n}`
+      if (!wx.getStorageSync(mk)) {
+        wx.setStorageSync(mk, true)
+        milestone = n
+      }
+    }
     let praisePool = PRAISES
-    if (this.data.streak + 1 >= 2 && Math.random() < 0.5) {
-      praisePool = STREAK_PRAISES.map(s => s.split('{n}').join(this.data.streak + 1))
+    if (milestone) {
+      praisePool = [`第 ${milestone} 天！连击里程碑达成`]
+    } else if (n >= 2 && Math.random() < 0.5) {
+      praisePool = STREAK_PRAISES.map(s => s.split('{n}').join(n))
     }
     this.setData({
       celebrating: true,
       praise: praisePool[Math.floor(Math.random() * praisePool.length)],
-      confetti
+      confetti,
+      milestoneN: milestone,
+      fireworks: milestone ? this.makeFireworks() : []
     })
     return true
   },
 
+  // 里程碑烟花：三个放点位，每点 10 道射线，方向由外层 rotate 承担、内层小点只做「飞出+熄灭」
+  makeFireworks() {
+    const points = [
+      { left: 18, top: 24, delay: 0 },
+      { left: 78, top: 18, delay: 0.85 },
+      { left: 50, top: 42, delay: 1.7 }
+    ]
+    return points.map(p => ({
+      left: p.left,
+      top: p.top,
+      rays: Array.from({ length: 10 }, (_, i) => ({
+        ang: Math.round(i * 36 + Math.random() * 8),
+        delay: (p.delay + Math.random() * 0.15).toFixed(2),
+        color: CONFETTI_COLORS[(i + p.left) % CONFETTI_COLORS.length]
+      }))
+    }))
+  },
+
   closeCelebrate() {
-    this.setData({ celebrating: false })
+    this.setData({ celebrating: false, milestoneN: 0, fireworks: [] })
   },
 
   // 面包超人的一天：打开页面且距上次主动开口超过 40 分钟时，按时段/状态冒一句
   maybeAutoBubble() {
-    if (this.data.bubbleShow || this.data.celebrating) return
+    if (this.data.bubbleShow || this.celebratingOrCards()) return
     if (!this.data.hasTemplate || this.data.total === 0) return
     const last = Number(wx.getStorageSync('lastBubbleAt') || 0)
     if (Date.now() - last < 40 * 60 * 1000) return
-    const quote = this.pickSceneQuote()
+    const quote = this._pendingFreezeNotice || this.pickSceneQuote()
     if (!quote) return
     this._autoTimer = setTimeout(() => {
       this._autoTimer = null
-      // 触发瞬间若戳一戳气泡正挂着或正在庆祝，这次就不插嘴，配额也不消耗
-      if (this.data.bubbleShow || this.data.celebrating) return
+      // 触发瞬间若戳一戳气泡正挂着或正在庆祝/弹卡，这次就不插嘴，配额也不消耗
+      if (this.data.bubbleShow || this.celebratingOrCards()) return
+      // 守护卡播报此刻才算送达：只有真正上屏了才记 freeze_notified，跨会话可重试
+      if (this._pendingFreezeDate) {
+        const notified = wx.getStorageSync('freeze_notified') || []
+        if (notified.indexOf(this._pendingFreezeDate) < 0) {
+          notified.push(this._pendingFreezeDate)
+          wx.setStorageSync('freeze_notified', notified)
+        }
+        this._pendingFreezeDate = ''
+      }
+      this._pendingFreezeNotice = ''
       // 真正要展示了才记时间，900ms 内切走不会白扣 40 分钟配额
       wx.setStorageSync('lastBubbleAt', Date.now())
       this.setData({ bubbleText: quote, bubbleShow: true })
@@ -536,14 +846,262 @@ Page({
     // 连续两次抽到同一句很出戏，错开一条
     if (POKE_QUOTES.length > 1 && idx === this._lastPokeIdx) idx = (idx + 1) % POKE_QUOTES.length
     this._lastPokeIdx = idx
-    if (this._bubbleTimer) clearTimeout(this._bubbleTimer)
-    this.setData({
-      pokeSeed: this.data.pokeSeed + 1,
-      bubbleText: POKE_QUOTES[idx],
-      bubbleShow: true
-    })
-    this._bubbleTimer = setTimeout(() => this.setData({ bubbleShow: false }), 2200)
+    this.setData({ pokeSeed: this.data.pokeSeed + 1 })
+    this.showBubble(POKE_QUOTES[idx], 2200)
     lightVibrate()
+  },
+
+  // 气泡统一走这里：换文案前先复位，方便调用方控制时长
+  showBubble(text, ms) {
+    if (this._bubbleTimer) clearTimeout(this._bubbleTimer)
+    this.setData({ bubbleText: text, bubbleShow: true })
+    this._bubbleTimer = setTimeout(() => this.setData({ bubbleShow: false }), ms)
+  },
+
+  // 吉祥物手势分发：单击延迟 260ms 出台词，260ms 内第二击是比心（窗口与提交延时同值，不留死区）
+  onMascotTap() {
+    if (this._dragged) return
+    const now = Date.now()
+    if (now - this._mascotTapAt < 260) {
+      if (this._mascotTapTimer) {
+        clearTimeout(this._mascotTapTimer)
+        this._mascotTapTimer = null
+      }
+      this._mascotTapAt = 0
+      this.heartMascot()
+      return
+    }
+    this._mascotTapAt = now
+    if (this._mascotTapTimer) clearTimeout(this._mascotTapTimer)
+    this._mascotTapTimer = setTimeout(() => {
+      this._mascotTapTimer = null
+      this._mascotTapAt = 0
+      this.pokeMascot()
+    }, 260)
+  },
+
+  // 双击比心：吉祥物原地冒一大串爱心往上飘
+  heartMascot() {
+    wx.createSelectorQuery()
+      .in(this)
+      .select('.mascot-zone')
+      .boundingClientRect()
+      .exec(res => {
+        const r = res && res[0]
+        if (!r) return
+        const cx = r.left + r.width / 2
+        const cy = r.top + r.height * 0.6
+        // 错峰冒 5 颗：定时器登记在册，页面切走时统一清掉，不会在清理后又冒出幽灵爱心
+        for (let i = 0; i < 5; i++) {
+          const stager = setTimeout(() => {
+            this._heartStagers = this._heartStagers.filter(x => x !== stager)
+            this.spawnHeart(cx + (Math.random() - 0.5) * r.width * 0.7, cy)
+          }, i * 90)
+          this._heartStagers.push(stager)
+        }
+        lightVibrate()
+        this.showBubble(HEART_QUOTES[Math.floor(Math.random() * HEART_QUOTES.length)], 2200)
+      })
+  },
+
+  // 一颗小爱心：起点视口坐标，两段式 setData 飘到上方后淡出（复用粒子爆花的套路）
+  spawnHeart(x, y) {
+    const key = `h${++this._heartSeq}`
+    const base = {
+      key,
+      sx: Math.round(x),
+      sy: Math.round(y),
+      tx: Math.round(x + (Math.random() - 0.5) * 50),
+      ty: Math.round(y - 90 - Math.random() * 50),
+      size: 24 + Math.round(Math.random() * 18),
+      color: ['#FF8FA3', '#FFB3C1', '#FF6F91'][this._heartSeq % 3]
+    }
+    this.setData({ hearts: this.data.hearts.concat([Object.assign({}, base, { x: base.sx, y: base.sy, o: 1, s: 0.5 })]) }, () => {
+      setTimeout(() => {
+        const idx = this.data.hearts.findIndex(h => h.key === key)
+        if (idx < 0) return
+        this.setData({ [`hearts[${idx}]`]: Object.assign({}, base, { x: base.tx, y: base.ty, o: 0, s: 1.15 }) })
+      }, 30)
+      this._heartFinals[key] = setTimeout(() => {
+        delete this._heartFinals[key]
+        this.setData({ hearts: this.data.hearts.filter(h => h.key !== key) })
+      }, 1000)
+    })
+  },
+
+  // 长按进入搓搓模式：手指在吉祥物上蹭，蹭到哪儿爱心冒到哪儿
+  onMascotLongpress(e) {
+    this._petting = true
+    this._petMoved = false
+    const t = e.touches && e.touches[0]
+    if (t) this.spawnHeart(t.clientX, t.clientY - 10)
+    lightVibrate()
+  },
+
+  onMascotTouchStart(e) {
+    const t = e.touches && e.touches[0]
+    if (!t) return
+    // 弹回动画还没走完就再次抓起：立刻摘掉弹簧过渡，拖拽才能跟手
+    if (this.data.springFlag) {
+      if (this._springTimer) {
+        clearTimeout(this._springTimer)
+        this._springTimer = null
+      }
+      this.setData({ springFlag: false, wobClass: '' })
+    }
+    this._dragStart = { x: t.clientX, y: t.clientY }
+    this._dragActive = false
+  },
+
+  onMascotTouchMove(e) {
+    const t = e.touches && e.touches[0]
+    if (!t) return
+    if (this._petting) {
+      this._petMoved = true
+      const now = Date.now()
+      if (now - this._petTick > 140) {
+        this._petTick = now
+        this.spawnHeart(t.clientX, t.clientY - 12)
+        if (Math.random() < 0.35) lightVibrate()
+      }
+      return
+    }
+    if (!this._dragStart) return
+    const dx = t.clientX - this._dragStart.x
+    const dy = t.clientY - this._dragStart.y
+    if (!this._dragActive && Math.abs(dx) + Math.abs(dy) > 8) this._dragActive = true
+    if (!this._dragActive) return
+    // 不倒翁：可以被拖走，但拖不远，松手弹回
+    const clamp = v => Math.max(-170, Math.min(170, v))
+    this.setData({
+      mascotDrag: {
+        dx: clamp(dx),
+        dy: clamp(dy),
+        rot: Math.max(-14, Math.min(14, dx * 0.08))
+      }
+    })
+  },
+
+  // touchend / touchcancel 共用：搓搓收尾后继续走拖拽清理，
+  // 否则「先拖动 8px 再按住超过 350ms」这类混合手势会让超人卡在偏移位置
+  onMascotTouchEnd() {
+    const wasPetting = this._petting
+    this._petting = false
+    if (wasPetting && this._petMoved) this.showBubble(RUB_QUOTES[Math.floor(Math.random() * RUB_QUOTES.length)], 2200)
+    this._petMoved = false
+    if (this._dragActive) {
+      this._dragActive = false
+      this._dragged = true
+      if (this._draggedTimer) clearTimeout(this._draggedTimer)
+      this._draggedTimer = setTimeout(() => { this._dragged = false }, 400)
+      // 弹回：挂上弹簧过渡 + 归零偏移，再补一段左右摇摆收尾
+      this.setData({ mascotDrag: { dx: 0, dy: 0, rot: 0 }, springFlag: true, wobClass: '' }, () => {
+        this.setData({ wobClass: 'wobbling' })
+      })
+      if (this._springTimer) clearTimeout(this._springTimer)
+      this._springTimer = setTimeout(() => this.setData({ springFlag: false }), 700)
+      lightVibrate()
+    }
+    this._dragStart = null
+  },
+
+  // 超人活起来：待机时呼吸（WXSS 常驻），每 12~21 秒随机来一个小动作
+  startIdle() {
+    this.stopIdle()
+    const loop = () => {
+      this._idleTimer = setTimeout(() => {
+        if (!this._petting && !this._dragActive && !this.data.celebrating && this.data.idleClass === '') {
+          const r = Math.random()
+          let act = 'tilt'
+          if (r < 0.3) act = 'hop'
+          else if (r < 0.55) act = 'wiggle'
+          else if (r < 0.6) act = 'spin'
+          // 先摘 class 再挂回，连续两次抽到同一动作也能重播
+          this.setData({ idleClass: '' }, () => {
+            this.setData({ idleClass: `act-${act}` })
+            if (this._idleClear) clearTimeout(this._idleClear)
+            this._idleClear = setTimeout(() => this.setData({ idleClass: '' }), 1300)
+          })
+        }
+        loop()
+      }, 12000 + Math.floor(Math.random() * 9000))
+    }
+    loop()
+  },
+
+  stopIdle() {
+    if (this._idleTimer) {
+      clearTimeout(this._idleTimer)
+      this._idleTimer = null
+    }
+    if (this._idleClear) {
+      clearTimeout(this._idleClear)
+      this._idleClear = null
+    }
+  },
+
+  // 任意全屏卡片/庆祝挂起时，其他主动开口都先让路
+  celebratingOrCards() {
+    return this.data.celebrating || this.data.captureShow || this.data.postcardShow || this.data.nightShow
+  },
+
+  // 深晚安安卡 & 隔夜旅行明信片：进入页面稍等半秒再弹，别跟问候语撞车
+  maybeCards() {
+    this.setData({ eveningStars: new Date().getHours() >= 18 })
+    this._cardTimer = setTimeout(() => {
+      this._cardTimer = null
+      if (this.maybeNightCard()) return
+      this.maybePostcard()
+    }, 600)
+  },
+
+  maybeNightCard() {
+    const hour = new Date().getHours()
+    if (hour < 23 || this.data.nightShow || this.celebratingOrCards()) return false
+    // 一晚只弹一次的记账放在「点掉」那一刻：中途切走不算送达，下次进来还会再关心你
+    if (wx.getStorageSync(`nightcard_${todayStr()}`)) return false
+    this.setData({
+      nightShow: true,
+      nightLine: NIGHT_LINES[Math.floor(Math.random() * NIGHT_LINES.length)]
+    })
+    lightVibrate()
+    return true
+  },
+
+  closeNight() {
+    wx.setStorageSync(`nightcard_${todayStr()}`, true)
+    this.setData({ nightShow: false })
+  },
+
+  maybePostcard() {
+    if (this.data.postcardShow || this.celebratingOrCards()) return
+    const y = new Date()
+    y.setDate(y.getDate() - 1)
+    const yd = todayStr(y)
+    const rec = wx.getStorageSync(`rec_${yd}`)
+    const collected = wx.getStorageSync('postcards') || []
+    if (!rec || !rec.allDone || collected.indexOf(yd) >= 0) return
+    // 收藏以「展示时算好的日期」为准，跨零点后才点收下也不会收错日子
+    this._postcardDate = yd
+    this.setData({
+      postcardShow: true,
+      postcardDateText: `${y.getMonth() + 1}月${y.getDate()}日`,
+      postcardCount: collected.length
+    })
+    lightVibrate()
+  },
+
+  collectPostcard() {
+    const list = wx.getStorageSync('postcards') || []
+    const yd = this._postcardDate
+    if (yd && list.indexOf(yd) < 0) {
+      list.unshift(yd)
+      try { wx.setStorageSync('postcards', list) } catch (err) {
+        console.error('收藏明信片失败', err)
+      }
+    }
+    this._postcardDate = ''
+    this.setData({ postcardShow: false, postcardCount: list.length })
   },
 
   // 截屏被抓到：弹一张小卡片，2.6 秒自动收，也可点掉
@@ -552,7 +1110,7 @@ Page({
     const pages = getCurrentPages()
     const top = pages[pages.length - 1]
     if (!top || top.route !== 'pages/today/today') return
-    if (this.data.celebrating || this.data.captureShow) return
+    if (this.celebratingOrCards()) return
     this.setData({
       captureShow: true,
       captureText: CAPTURE_QUOTES[Math.floor(Math.random() * CAPTURE_QUOTES.length)]

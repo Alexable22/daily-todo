@@ -35,13 +35,112 @@
   font-size: 30rpx;
 }
 
+/* 傍晚后的星星：18 点起页头悄悄亮起几颗小星星 */
+.dusk-stars {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 320rpx;
+  z-index: 0;
+  pointer-events: none;
+}
+.ds-star {
+  position: absolute;
+  width: 10rpx;
+  height: 10rpx;
+  border-radius: 50%;
+  background: #FFE3A0;
+  /* delay 期间按 0% 帧状态显示，避免星星先满亮一瞬再开始闪 */
+  opacity: 0.15;
+  animation: dsTwinkle 2.6s ease-in-out infinite;
+}
+.ds1 { left: 12%; top: 18%; }
+.ds2 { left: 30%; top: 46%; animation-delay: 0.6s; }
+.ds3 { left: 48%; top: 12%; animation-delay: 1.2s; }
+.ds4 { left: 64%; top: 38%; animation-delay: 0.3s; }
+.ds5 { left: 80%; top: 20%; animation-delay: 1.7s; }
+.ds6 { left: 90%; top: 55%; animation-delay: 0.9s; }
+@keyframes dsTwinkle {
+  0%, 100% { opacity: 0.15; transform: scale(0.8); }
+  50% { opacity: 0.7; transform: scale(1.15); }
+}
+
+/* 守护卡小注 */
+.streak-guard {
+  margin-top: 8rpx;
+  font-size: 21rpx;
+  color: #C9A16B;
+}
+
 /* 戳一戳吉祥物 */
 .mascot-zone {
   position: relative;
   flex-shrink: 0;
 }
-.mascot-hover {
-  opacity: 0.8;
+/* 不倒翁弹回：只有松手归位时挂 spring，拖拽过程不带过渡才跟手 */
+.mascot-zone.spring {
+  transition: transform 0.62s cubic-bezier(0.22, 1.45, 0.36, 1);
+}
+.mascot-wob,
+.mascot-live {
+  width: 100%;
+  height: 100%;
+}
+/* 超人活起来：常驻呼吸 */
+.mascot-live {
+  transform-origin: 50% 88%;
+  animation: breathe 3.4s ease-in-out infinite;
+}
+@keyframes breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.035); }
+}
+.mascot-wob.wobbling {
+  transform-origin: 50% 90%;
+  animation: wob 0.85s ease-out;
+}
+@keyframes wob {
+  0% { transform: rotate(0deg); }
+  22% { transform: rotate(9deg); }
+  45% { transform: rotate(-7deg); }
+  68% { transform: rotate(4deg); }
+  85% { transform: rotate(-2deg); }
+  100% { transform: rotate(0deg); }
+}
+/* 待机小动作：歪头 / 蹦一下 / 摇摆 / 转圈 */
+.mascot-live.act-tilt {
+  animation: actTilt 0.9s ease-in-out;
+}
+.mascot-live.act-hop {
+  animation: actHop 0.65s cubic-bezier(0.3, 0.8, 0.4, 1.2);
+}
+.mascot-live.act-wiggle {
+  animation: actWiggle 0.8s ease-in-out;
+}
+.mascot-live.act-spin {
+  animation: actSpin 0.85s cubic-bezier(0.45, 0.1, 0.3, 1);
+}
+@keyframes actTilt {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  30% { transform: rotate(-8deg) scale(1.02); }
+  65% { transform: rotate(6deg) scale(1); }
+}
+@keyframes actHop {
+  0%, 100% { transform: translateY(0) scale(1); }
+  35% { transform: translateY(-14rpx) scale(1.04, 0.96); }
+  70% { transform: translateY(0) scale(0.97, 1.03); }
+}
+@keyframes actWiggle {
+  0%, 100% { transform: rotate(0deg); }
+  20% { transform: rotate(5deg); }
+  40% { transform: rotate(-5deg); }
+  60% { transform: rotate(4deg); }
+  80% { transform: rotate(-3deg); }
+}
+@keyframes actSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 .poke-bubble {
   position: absolute;
@@ -90,6 +189,78 @@
 }
 .burst-p.round {
   border-radius: 50%;
+}
+
+/* 双击比心 / 搓搓：小爱心往上飘 */
+.heart-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 82;
+  pointer-events: none;
+}
+.heart-f {
+  position: absolute;
+  line-height: 1;
+  transition: left 0.9s ease-out, top 0.9s ease-out, opacity 0.9s ease-out, transform 0.9s ease-out;
+  text-shadow: 0 2rpx 6rpx rgba(255, 143, 163, 0.4);
+}
+
+/* 拍一拍：任务行抖动 + 头顶俏皮话 */
+.task-card.patted {
+  animation: patShake 0.5s ease-out;
+}
+@keyframes patShake {
+  0%, 100% { transform: translateX(0); }
+  15% { transform: translateX(-10rpx) rotate(-0.6deg); }
+  30% { transform: translateX(9rpx) rotate(0.5deg); }
+  45% { transform: translateX(-7rpx); }
+  60% { transform: translateX(6rpx); }
+  75% { transform: translateX(-3rpx); }
+}
+.pat-tag {
+  position: fixed;
+  z-index: 85;
+  transform: translateX(-50%);
+  padding: 10rpx 22rpx;
+  background: #FFF3F5;
+  border: 2rpx solid #FFD3DC;
+  border-radius: 999rpx;
+  font-size: 23rpx;
+  color: #E8736B;
+  white-space: nowrap;
+  box-shadow: 0 6rpx 18rpx rgba(232, 115, 107, 0.18);
+  animation: patFloat 1.05s ease-out forwards;
+}
+@keyframes patFloat {
+  0% { opacity: 0; transform: translateX(-50%) translateY(6rpx) scale(0.85); }
+  18% { opacity: 1; transform: translateX(-50%) translateY(-6rpx) scale(1); }
+  70% { opacity: 1; }
+  100% { opacity: 0; transform: translateX(-50%) translateY(-46rpx) scale(0.95); }
+}
+
+/* 暴击横幅 */
+.crit-banner {
+  position: fixed;
+  top: 96rpx;
+  left: 50%;
+  z-index: 88;
+  padding: 16rpx 44rpx;
+  background: linear-gradient(100deg, #FF8FA3, #FFB86B);
+  color: #FFFFFF;
+  font-size: 28rpx;
+  font-weight: 700;
+  letter-spacing: 2rpx;
+  border-radius: 999rpx;
+  box-shadow: 0 10rpx 30rpx rgba(255, 143, 163, 0.45);
+  animation: critIn 1.6s cubic-bezier(0.2, 0.9, 0.3, 1.1) forwards;
+  pointer-events: none;
+}
+@keyframes critIn {
+  0% { opacity: 0; transform: translate(-50%, -60rpx) scale(0.6) rotate(-4deg); }
+  14% { opacity: 1; transform: translate(-50%, 0) scale(1.08) rotate(1.5deg); }
+  22% { transform: translate(-50%, 0) scale(1) rotate(0deg); }
+  82% { opacity: 1; transform: translate(-50%, 0); }
+  100% { opacity: 0; transform: translate(-50%, -30rpx); }
 }
 
 /* 进度卡 */
@@ -303,6 +474,296 @@
   margin-top: 10rpx;
   font-size: 25rpx;
   color: #6B4F4F;
+}
+
+/* 明信片 / 晚安卡共用的全屏遮罩 */
+.card-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  background: rgba(107, 79, 79, 0.38);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: maskIn 0.3s ease-out;
+}
+@keyframes maskIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* 隔夜旅行明信片：奶油信纸 + 邮票 + 邮戳 */
+.postcard {
+  width: 620rpx;
+  box-sizing: border-box;
+  padding: 36rpx 40rpx 32rpx;
+  background: #FFFBF2;
+  border-radius: 20rpx;
+  box-shadow: 0 18rpx 56rpx rgba(107, 79, 79, 0.3);
+  transform: rotate(-2deg);
+  animation: postcardIn 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.15);
+}
+@keyframes postcardIn {
+  0% { opacity: 0; transform: rotate(-6deg) translateY(70rpx) scale(0.85); }
+  100% { opacity: 1; transform: rotate(-2deg) translateY(0) scale(1); }
+}
+.pc-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  border-bottom: 3rpx dashed #EAD9BE;
+  padding-bottom: 22rpx;
+}
+.pc-stamp {
+  position: relative;
+  width: 108rpx;
+  height: 118rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #FFEDE4;
+}
+/* 邮票齿孔：四边虚线模拟 */
+.pc-perf {
+  position: absolute;
+  inset: 0;
+  border: 3rpx dashed #FFFFFF;
+  box-shadow: 0 0 0 3rpx #FFEDE4;
+}
+.pc-postmark {
+  width: 128rpx;
+  height: 128rpx;
+  border-radius: 50%;
+  border: 3rpx solid rgba(154, 126, 94, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22rpx;
+  color: rgba(154, 126, 94, 0.75);
+  transform: rotate(12deg);
+}
+.pc-body {
+  padding: 26rpx 6rpx 6rpx;
+}
+.pc-to {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #6B4F4F;
+}
+.pc-text {
+  margin-top: 14rpx;
+  font-size: 26rpx;
+  line-height: 1.7;
+  color: #7A6350;
+}
+.pc-sign {
+  margin-top: 14rpx;
+  font-size: 23rpx;
+  color: #B08E8E;
+  text-align: right;
+}
+.pc-foot {
+  display: flex;
+  align-items: center;
+  margin-top: 10rpx;
+  gap: 24rpx;
+}
+.pc-meta {
+  flex: 1;
+}
+.pc-date {
+  font-size: 22rpx;
+  color: #B08E8E;
+}
+.pc-count {
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  color: #C9A16B;
+}
+.pc-btn {
+  margin-top: 24rpx;
+  width: 100%;
+}
+
+/* 深夜劝睡：夜空卡 */
+.night-mask {
+  background: rgba(38, 42, 66, 0.62);
+  z-index: 112;
+}
+.night-card {
+  position: relative;
+  width: 600rpx;
+  box-sizing: border-box;
+  padding: 48rpx 44rpx 40rpx;
+  background: linear-gradient(180deg, #3A4166, #2E3452);
+  border-radius: 36rpx;
+  box-shadow: 0 18rpx 60rpx rgba(20, 24, 44, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: nightIn 0.4s ease-out;
+  overflow: hidden;
+}
+@keyframes nightIn {
+  0% { opacity: 0; transform: translateY(40rpx); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.night-sky {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.n-star {
+  position: absolute;
+  width: 8rpx;
+  height: 8rpx;
+  border-radius: 50%;
+  background: #FFF2C4;
+  opacity: 0.2;
+  animation: nTwinkle 2.2s ease-in-out infinite;
+}
+.ns1 { left: 14%; top: 16%; }
+.ns2 { left: 32%; top: 8%; animation-delay: 0.5s; }
+.ns3 { left: 68%; top: 12%; animation-delay: 1s; }
+.ns4 { left: 86%; top: 24%; animation-delay: 0.2s; }
+.ns5 { left: 50%; top: 28%; animation-delay: 1.5s; }
+@keyframes nTwinkle {
+  0%, 100% { opacity: 0.2; transform: scale(0.7); }
+  50% { opacity: 0.95; transform: scale(1.2); }
+}
+.n-moon {
+  position: absolute;
+  right: 52rpx;
+  top: 44rpx;
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  background: #FFE9A8;
+  box-shadow: 0 0 24rpx rgba(255, 233, 168, 0.6);
+}
+.n-moon::after {
+  content: '';
+  position: absolute;
+  right: -14rpx;
+  top: -8rpx;
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  background: #363C5E;
+}
+.night-hero {
+  position: relative;
+  animation: nightBob 3.2s ease-in-out infinite;
+}
+@keyframes nightBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10rpx); }
+}
+.night-zzz {
+  position: absolute;
+  right: -46rpx;
+  top: -6rpx;
+  color: #C9D4FF;
+  font-weight: 700;
+}
+.night-zzz text {
+  position: absolute;
+  animation: zzzFloat 2.4s ease-out infinite;
+  opacity: 0;
+}
+.z1 { font-size: 26rpx; left: 0; }
+.z2 { font-size: 32rpx; left: 22rpx; animation-delay: 0.5s; }
+.z3 { font-size: 40rpx; left: 50rpx; animation-delay: 1s; }
+@keyframes zzzFloat {
+  0% { opacity: 0; transform: translateY(6rpx); }
+  25% { opacity: 0.9; }
+  100% { opacity: 0; transform: translateY(-40rpx); }
+}
+.night-title {
+  margin-top: 28rpx;
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #FFF2C4;
+}
+.night-text {
+  margin-top: 14rpx;
+  font-size: 26rpx;
+  line-height: 1.7;
+  color: #C9D4FF;
+  text-align: center;
+}
+.night-btn {
+  margin-top: 32rpx;
+  width: 100%;
+  height: 84rpx;
+  line-height: 84rpx;
+  border-radius: 999rpx;
+  background: #FFE9A8;
+  color: #6B5A2E;
+  font-size: 28rpx;
+  font-weight: 600;
+  border: none;
+}
+.night-btn::after {
+  border: none;
+}
+
+/* 里程碑烟花：方向由外层 rotate 承担，小点只负责「飞出 + 熄灭」，无限循环 */
+.fw-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.fw-point {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+.fw-ray {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+}
+.fw-dot {
+  position: absolute;
+  left: -7rpx;
+  top: -7rpx;
+  width: 14rpx;
+  height: 14rpx;
+  border-radius: 50%;
+  /* 放点位错峰 delay 期间先隐身，别让 10 颗实心点先叠在原点亮着 */
+  opacity: 0;
+  animation: fwDot 2.55s ease-out infinite;
+}
+@keyframes fwDot {
+  0% { opacity: 0; transform: translateX(0) scale(0.3); }
+  4% { opacity: 1; transform: translateX(26rpx) scale(1.1); }
+  26% { opacity: 0.9; transform: translateX(110rpx) scale(0.7); }
+  40% { opacity: 0; transform: translateX(138rpx) scale(0.2); }
+  100% { opacity: 0; transform: translateX(138rpx) scale(0.2); }
+}
+.mega-wrap {
+  position: relative;
+}
+/* 变身感：金色光晕呼吸 */
+.mega-wrap.mega {
+  animation: megaGlow 1.3s ease-in-out infinite alternate;
+}
+@keyframes megaGlow {
+  0% { filter: drop-shadow(0 0 6rpx rgba(255, 200, 100, 0.35)); transform: scale(1); }
+  100% { filter: drop-shadow(0 0 26rpx rgba(255, 200, 100, 0.85)); transform: scale(1.06); }
+}
+.milestone-badge {
+  margin-top: 20rpx;
+  padding: 10rpx 34rpx;
+  background: linear-gradient(100deg, #FFE3A0, #FFC46B);
+  color: #7A5A1E;
+  font-size: 26rpx;
+  font-weight: 700;
+  border-radius: 999rpx;
+  box-shadow: 0 8rpx 24rpx rgba(255, 196, 107, 0.4);
 }
 
 /* 庆祝遮罩 */

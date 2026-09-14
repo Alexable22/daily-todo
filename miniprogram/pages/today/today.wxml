@@ -1,12 +1,34 @@
 <view class="page">
+  <view class="dusk-stars" wx:if="{{eveningStars}}">
+    <view class="ds-star ds1"></view>
+    <view class="ds-star ds2"></view>
+    <view class="ds-star ds3"></view>
+    <view class="ds-star ds4"></view>
+    <view class="ds-star ds5"></view>
+    <view class="ds-star ds6"></view>
+  </view>
+
   <view class="header">
     <view class="header-left">
       <view class="date">{{dateText}} · {{weekdayText}}</view>
       <view class="greeting">{{greeting}}</view>
-      <view class="streak" wx:if="{{streak > 0}}">已连续打卡 <text class="streak-num">{{streak}}</text> 天</view>
+      <view class="streak" wx:if="{{streak > 0}}">
+        <text>已连续打卡 </text>
+        <text class="streak-num">{{streak}}</text>
+        <text> 天</text>
+      </view>
+      <view class="streak-guard" wx:if="{{streak > 0 && freezeProtected > 0}}">超人守护卡护住了连击</view>
     </view>
-    <view class="mascot-zone" bindtap="pokeMascot" hover-class="mascot-hover">
-      <anpanman size="{{150}}" src="/assets/mascot/cheer.png" animate="{{allDone}}" poke-seed="{{pokeSeed}}" />
+    <view class="mascot-zone {{springFlag ? 'spring' : ''}}"
+          style="transform: translate({{mascotDrag.dx}}px, {{mascotDrag.dy}}px) rotate({{mascotDrag.rot}}deg)"
+          bindtap="onMascotTap" bindlongpress="onMascotLongpress"
+          bindtouchstart="onMascotTouchStart" bindtouchmove="onMascotTouchMove"
+          bindtouchend="onMascotTouchEnd" bindtouchcancel="onMascotTouchEnd">
+      <view class="mascot-wob {{wobClass}}">
+        <view class="mascot-live {{idleClass}}">
+          <anpanman size="{{150}}" src="/assets/mascot/cheer.png" animate="{{allDone}}" poke-seed="{{pokeSeed}}" />
+        </view>
+      </view>
       <view wx:if="{{bubbleShow}}" class="poke-bubble">{{bubbleText}}</view>
     </view>
   </view>
@@ -33,7 +55,7 @@
 
   <view class="task-list">
     <view wx:for="{{items}}" wx:key="id" data-id="{{item.id}}" bindtap="toggle"
-          class="card task-card {{item.done ? 'done' : ''}} st-{{item.status}}">
+          class="card task-card {{item.done ? 'done' : ''}} st-{{item.status}} {{pattedId === item.id ? patClass : ''}}">
       <view class="check {{item.done ? 'checked' : ''}}" id="check-{{item.id}}">
         <view wx:if="{{item.done}}" class="check-mark">
           <view class="cm-arm cm-a1"></view>
@@ -55,18 +77,85 @@
           style="left:{{p.x}}px;top:{{p.y}}px;width:{{p.size}}px;height:{{p.size}}px;background:{{p.color}};opacity:{{p.o}};transform:scale({{p.s}})"></view>
   </view>
 
+  <view wx:if="{{hearts.length}}" class="heart-layer">
+    <view wx:for="{{hearts}}" wx:key="key" class="heart-f"
+          style="left:{{item.x}}px;top:{{item.y}}px;font-size:{{item.size}}px;opacity:{{item.o}};transform:scale({{item.s}});color:{{item.color}}">♥</view>
+  </view>
+
+  <view wx:if="{{patTag}}" class="pat-tag" style="left:{{patTag.x}}px;top:{{patTag.y}}px">{{patTag.text}}</view>
+
+  <view wx:if="{{critShow}}" class="crit-banner">{{critText}}</view>
+
   <view wx:if="{{captureShow}}" class="capture-tip" bindtap="closeCapture">
     <anpanman size="{{140}}" src="/assets/mascot/cheer.png" />
     <view class="capture-text">{{captureText}}</view>
   </view>
 
+  <view wx:if="{{postcardShow}}" class="card-mask" bindtap="collectPostcard">
+    <view class="postcard" catchtap="collectPostcard">
+      <view class="pc-head">
+        <view class="pc-stamp">
+          <anpanman size="{{68}}" />
+          <view class="pc-perf"></view>
+        </view>
+        <view class="pc-postmark">超人邮局</view>
+      </view>
+      <view class="pc-body">
+        <view class="pc-to">亲爱的心爱：</view>
+        <view class="pc-text">昨天的计划全部完成，超人特地出一趟远门，给你寄来这张明信片。今天也要像昨天一样闪闪发光哦！</view>
+        <view class="pc-sign">—— 爱你的超人 · 于巡逻途中</view>
+      </view>
+      <view class="pc-foot">
+        <anpanman size="{{150}}" src="/assets/mascot/wave.png" shape="card" />
+        <view class="pc-meta">
+          <view class="pc-date">寄出：{{postcardDateText}}</view>
+          <view class="pc-count">明信片收藏册 · 已收到 {{postcardCount + 1}} 张</view>
+        </view>
+      </view>
+      <button class="btn-primary pc-btn" catchtap="collectPostcard">收下明信片</button>
+    </view>
+  </view>
+
+  <view wx:if="{{nightShow}}" class="card-mask night-mask" catchtap="closeNight">
+    <view class="night-card" catchtap="closeNight">
+      <view class="night-sky">
+        <view class="n-star ns1"></view>
+        <view class="n-star ns2"></view>
+        <view class="n-star ns3"></view>
+        <view class="n-star ns4"></view>
+        <view class="n-star ns5"></view>
+        <view class="n-moon"></view>
+      </view>
+      <view class="night-hero">
+        <anpanman size="{{170}}" src="/assets/mascot/cheer.png" />
+        <view class="night-zzz"><text class="z1">Z</text><text class="z2">z</text><text class="z3">z</text></view>
+      </view>
+      <view class="night-title">23 点啦，该休息咯</view>
+      <view class="night-text">{{nightLine}}</view>
+      <button class="night-btn" catchtap="closeNight">知道啦，这就睡</button>
+    </view>
+  </view>
+
   <view wx:if="{{celebrating}}" class="celebrate-mask" bindtap="closeCelebrate">
     <view wx:for="{{confetti}}" wx:key="index" class="confetti"
           style="left:{{item.left}}%;background:{{item.color}};width:{{item.size}}rpx;height:{{item.size}}rpx;animation-delay:{{item.delay}}s"></view>
+    <view wx:if="{{milestoneN}}" class="fw-layer">
+      <view wx:for="{{fireworks}}" wx:key="index" wx:for-item="fw" class="fw-point"
+            style="left:{{fw.left}}%;top:{{fw.top}}%">
+        <view wx:for="{{fw.rays}}" wx:for-item="ray" wx:key="index" class="fw-ray"
+              style="transform:rotate({{ray.ang}}deg)">
+          <view class="fw-dot" style="animation-delay:{{ray.delay}}s;background:{{ray.color}}"></view>
+        </view>
+      </view>
+    </view>
     <view class="celebrate-box">
-      <anpanman size="{{220}}" src="/assets/mascot/cheer.png" animate="{{true}}" />
+      <view class="mega-wrap {{milestoneN ? 'mega' : ''}}">
+        <anpanman size="{{220}}" src="/assets/mascot/cheer.png" animate="{{true}}" />
+      </view>
+      <view wx:if="{{milestoneN}}" class="milestone-badge">第 {{milestoneN}} 天 · 里程碑</view>
       <view class="praise">{{praise}}</view>
-      <view class="praise-sub">今日计划全部完成，点任意处收下夸夸</view>
+      <view class="praise-sub" wx:if="{{!milestoneN}}">今日计划全部完成，点任意处收下夸夸</view>
+      <view class="praise-sub" wx:else>连击 {{milestoneN}} 天达成！超人在天上放了一场专属烟花，为你庆祝这一路的坚持</view>
     </view>
   </view>
 </view>
